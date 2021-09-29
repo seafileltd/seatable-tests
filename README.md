@@ -1,1 +1,1 @@
-# dtable-script
+# dtable-db-tests
