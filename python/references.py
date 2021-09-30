@@ -26,7 +26,7 @@ REFERENCES = [
                 "长文本":"""### Introduction\n\n##### Abstract\n\nLong  long time ago....\n\n```python\nprint(111)\n\n```\n\n`Select * from Table1`\n\n> haahaha\n\n* Hello\n* Salute\n\n1. Hello1\n2. Salute1\n\n\n""",
                 "协作人":["jiwei.ran@seafile.com"],
                 "时长": 3 * 3600 + 43 * 60,
-                "多选": ['击剑','足球', ],
+                "多选": ['击剑','足球'],
                 "URL": "https://www.baidu.com",
                 "评分": 4,
                 "公式": 20,
@@ -43,6 +43,13 @@ REFERENCES = [
                 "修改时间":"2021-09-30T03:54:32.473Z",
                 "自动序号":"Test-0001"
             }
+        ]
+    },
+    {
+        'sql':"Select 文本,sum(数字) from Table1 group by 文本",
+        'expected_result':[
+            {'文本': 'AA', 'SUM(数字)': 30},
+            {'文本': 'BB', 'SUM(数字)': 50}
         ]
     }
 ]
