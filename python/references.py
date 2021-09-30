@@ -1,5 +1,6 @@
 REFERENCES = [
     {
+        "type": 'List',
         "sql": "Select * from Table1 limit 1",
         "expected_result": [
             {
@@ -46,6 +47,7 @@ REFERENCES = [
         ]
     },
     {
+        'type': 'GroupBy',
         'sql':"Select 文本,sum(数字) from Table1 group by 文本",
         'expected_result':[
             {'文本': 'AA', 'SUM(数字)': 30},

@@ -10,9 +10,19 @@ base.auth()
 
 for ref in REFERENCES:
     sql = ref.get('sql')
-    query_result = base.query(sql)[0]
-    expected_result = ref.get('expected_result')[0]
-    for key, value in query_result.items():
-        expected_value = expected_result.get(key)
-        if value != expected_result.get(key):
-            print ("Value error: %s column %s expected, but %s returned " % (key, expected_value, value))
+    query_type = ref.get('type')
+    query_result = base.query(sql)
+    expected_result = ref.get('expected_result')
+    print("===========SQL: %s===========" % sql)
+    if query_type == 'List':
+        query_result = query_result[0]
+        expected_result = expected_result[0]
+        for key, value in query_result.items():
+            expected_value = expected_result.get(key)
+            if value != expected_result.get(key):
+                print("Value error: %s column %s expected, but %s returned " % (key, expected_value, value))
+    if query_type == 'GroupBy':
+        if query_result != expected_result:
+            print("Value error: %s column %s expected, but %s returned " % (key, expected_value, value))
+
+    print("\n")
