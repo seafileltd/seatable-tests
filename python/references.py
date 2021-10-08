@@ -48,7 +48,7 @@ REFERENCES = [
                 "创建者": "jiwei.ran@seafile.com",
                 "修改者": "jiwei.ran@seafile.com",
                 "创建时间": "2021-09-26T02:39:57.067Z",
-                "修改时间": "2021-09-30T03:54:32.473Z",
+                "修改时间": "2021-09-30T03:58:55.052Z",
                 "自动序号": "Test-0001"
             }
         ]
@@ -133,6 +133,62 @@ REFERENCES = [
             {'_id':'COASY7zyRaOUZAWKyFEyzQ','URL':'https://google.com'},
             {'_id':'G9c0P_fmQ8WG-lL5RG8bng','URL':'https://www.baidu.com'},
         ]
-    }
+    },
+    {
+        'type': 'Common',
+        'sql':  "select 文本, 数字, 邮箱 from Table1 where 文本='AA' and 数字 < 30",
+        'expected_result':[
+            {'_id':'COASY7zyRaOUZAWKyFEyzQ','文本':'AA', '邮箱':'r350178982@qq.com', '数字':20},
+            {'_id':'G9c0P_fmQ8WG-lL5RG8bng','文本':'AA', '邮箱':'350178982@qq.com', '数字':10},
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql':  "select 文本, 数字, 邮箱, URL, 日期 from Table1 where 日期 BETWEEN '2021-09-01' AND '2021-09-20'",
+        'expected_result':[
+            {'_id':'RKMQdKjQTamnaP23JrOZ1w','文本':'BB', '邮箱':'ran.jiwei@seafile.com', '数字':30,'URL':'https://cloud.seatable.io','日期':'2021-09-16'},
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 日期, Quarter(`日期`), ISODate(`日期`), ISOMonth(`日期`) from Table1",
+        'expected_result':[
+            {'日期': '2021-09-26', 'ISODATE(`日期`)': '2021-09-26', 'ISOMONTH(`日期`)': '2021-09', 'QUARTER(`日期`)': 3, '_id': 'G9c0P_fmQ8WG-lL5RG8bng'},
+            {'日期': '2021-09-27', 'ISODATE(`日期`)': '2021-09-27', 'ISOMONTH(`日期`)': '2021-09', 'QUARTER(`日期`)': 3, '_id': 'COASY7zyRaOUZAWKyFEyzQ'},
+            {'日期': '2021-03-02', 'ISODATE(`日期`)': '2021-03-02', 'ISOMONTH(`日期`)': '2021-03', 'QUARTER(`日期`)': 1, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ'},
+            {'日期': '2021-09-16', 'ISODATE(`日期`)': '2021-09-16', 'ISOMONTH(`日期`)': '2021-09', 'QUARTER(`日期`)': 3, '_id': 'RKMQdKjQTamnaP23JrOZ1w'}
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 数字, add(`数字`, 25), subtract(`数字`, 5), multiply(`数字`, `数字`), divide(`数字`,2), mod(`数字`,3), power(`数字`,2) from Table1",
+        'expected_result':[
+            {'ADD(`数字`, 25)': 35, 'DIVIDE(`数字`,2)': 5, 'MOD(`数字`,3)': 1, 'MULTIPLY(`数字`, `数字`)': 100, 'POWER(`数字`,2)': 100, 'SUBTRACT(`数字`, 5)': 5, '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
+            {'ADD(`数字`, 25)': 45, 'DIVIDE(`数字`,2)': 10, 'MOD(`数字`,3)': 2, 'MULTIPLY(`数字`, `数字`)': 400, 'POWER(`数字`,2)': 400, 'SUBTRACT(`数字`, 5)': 15, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
+            {'ADD(`数字`, 25)': 75, 'DIVIDE(`数字`,2)': 25, 'MOD(`数字`,3)': 2, 'MULTIPLY(`数字`, `数字`)': 2500, 'POWER(`数字`,2)': 2500, 'SUBTRACT(`数字`, 5)': 45, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
+            {'ADD(`数字`, 25)': 55, 'DIVIDE(`数字`,2)': 15, 'MOD(`数字`,3)': 0, 'MULTIPLY(`数字`, `数字`)': 900, 'POWER(`数字`,2)': 900, 'SUBTRACT(`数字`, 5)': 25, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
+       ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 数字, greater(`数字`, 20), lessthan(`数字`, 30), greatereq(`数字`, 50), lessthaneq(`数字`,10), equal(`数字`,20), unequal(`数字`,30) from Table1",
+        'expected_result':[
+            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': False, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': True, 'LESSTHANEQ(`数字`,10)': True, 'UNEQUAL(`数字`,30)': -20, '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
+            {'EQUAL(`数字`,20)': True, 'GREATER(`数字`, 20)': False, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': True, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': -10, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
+            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': True, 'GREATEREQ(`数字`, 50)': True, 'LESSTHAN(`数字`, 30)': False, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': 20, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
+            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': True, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': False, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': 0, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 文本, URL, exact(`文本`,'AA'), find('goo',`URL`, 1), left(`URL`,5), len(`URL`), lower(`文本`), mid(`邮箱`, 1, 8), replace(`邮箱`, 1, 8, '12345678'), rept(`文本`, 2), right(`URL`, 5), search('www',`URL`,1), substitute(`邮箱`, '@', '^^',1) from Table1",
+        'expected_result':[
+            {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 21, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': '35017898', "REPLACE(`邮箱`, 1, 8, '12345678')": '123456782@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'u.com', "SEARCH('www',`URL`,1)": 9, "SUBSTITUTE(`邮箱`, '@', '^^',1)": '350178982^^qq.com', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', 'URL': 'https://www.baidu.com'},
+            {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": 9, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 18, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': 'r3501789', "REPLACE(`邮箱`, 1, 8, '12345678')": '1234567882@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'e.com', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'r350178982^^qq.com', '_id': 'COASY7zyRaOUZAWKyFEyzQ', 'URL': 'https://google.com'},
+            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 23, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'rjw@gmai', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678l.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.cn', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'rjw^^gmail.com', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', 'URL': 'https://dev.seatable.cn'},
+            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 25, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'ran.jiwe', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678i@seafile.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.io', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'ran.jiwei^^seafile.com', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io'}]
+    },
+
+
 
 ]
