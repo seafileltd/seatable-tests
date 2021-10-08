@@ -173,10 +173,10 @@ REFERENCES = [
         'type': 'Common',
         'sql': "select 数字, greater(`数字`, 20), lessthan(`数字`, 30), greatereq(`数字`, 50), lessthaneq(`数字`,10), equal(`数字`,20), unequal(`数字`,30) from Table1",
         'expected_result':[
-            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': False, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': True, 'LESSTHANEQ(`数字`,10)': True, 'UNEQUAL(`数字`,30)': -20, '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
-            {'EQUAL(`数字`,20)': True, 'GREATER(`数字`, 20)': False, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': True, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': -10, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
-            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': True, 'GREATEREQ(`数字`, 50)': True, 'LESSTHAN(`数字`, 30)': False, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': 20, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
-            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': True, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': False, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': 0, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
+            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': False, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': True, 'LESSTHANEQ(`数字`,10)': True, 'UNEQUAL(`数字`,30)': True, '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
+            {'EQUAL(`数字`,20)': True, 'GREATER(`数字`, 20)': False, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': True, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': True, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
+            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': True, 'GREATEREQ(`数字`, 50)': True, 'LESSTHAN(`数字`, 30)': False, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': True, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
+            {'EQUAL(`数字`,20)': False, 'GREATER(`数字`, 20)': True, 'GREATEREQ(`数字`, 50)': False, 'LESSTHAN(`数字`, 30)': False, 'LESSTHANEQ(`数字`,10)': False, 'UNEQUAL(`数字`,30)': False, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
         ]
     },
     {
