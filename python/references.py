@@ -186,7 +186,57 @@ REFERENCES = [
             {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 21, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': '35017898', "REPLACE(`邮箱`, 1, 8, '12345678')": '123456782@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'u.com', "SEARCH('www',`URL`,1)": 9, "SUBSTITUTE(`邮箱`, '@', '^^',1)": '350178982^^qq.com', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', 'URL': 'https://www.baidu.com'},
             {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": 9, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 18, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': 'r3501789', "REPLACE(`邮箱`, 1, 8, '12345678')": '1234567882@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'e.com', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'r350178982^^qq.com', '_id': 'COASY7zyRaOUZAWKyFEyzQ', 'URL': 'https://google.com'},
             {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 23, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'rjw@gmai', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678l.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.cn', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'rjw^^gmail.com', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', 'URL': 'https://dev.seatable.cn'},
-            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 25, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'ran.jiwe', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678i@seafile.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.io', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'ran.jiwei^^seafile.com', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io'}]
+            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 25, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'ran.jiwe', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678i@seafile.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.io', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'ran.jiwei^^seafile.com', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io'}
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 文本, 数字, URL, T(`文本`), T(`数字`), text(`数字`,'dollar'), upper(`URL`) from Table1",
+        'expected_result':[
+            {'文本': 'AA', 'T(`数字`)': '', 'T(`文本`)': 'AA', "TEXT(`数字`,'dollar')": '$10.00', 'UPPER(`URL`)': 'HTTPS://WWW.BAIDU.COM', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', 'URL': 'https://www.baidu.com', '数字': 10},
+            {'文本': 'AA', 'T(`数字`)': '', 'T(`文本`)': 'AA', "TEXT(`数字`,'dollar')": '$20.00', 'UPPER(`URL`)': 'HTTPS://GOOGLE.COM', '_id': 'COASY7zyRaOUZAWKyFEyzQ', 'URL': 'https://google.com', '数字': 20},
+            {'文本': 'BB', 'T(`数字`)': '', 'T(`文本`)': 'BB', "TEXT(`数字`,'dollar')": '$50.00', 'UPPER(`URL`)': 'HTTPS://DEV.SEATABLE.CN', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', 'URL': 'https://dev.seatable.cn', '数字': 50},
+            {'文本': 'BB', 'T(`数字`)': '', 'T(`文本`)': 'BB', "TEXT(`数字`,'dollar')": '$30.00', 'UPPER(`URL`)': 'HTTPS://CLOUD.SEATABLE.IO', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io', '数字': 30}
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 数字, 数字1, abs(`数字1`), ceiling(`数字1`), even(`数字1`), exp(2), floor(`数字1`), int(`数字1`), log(`数字`, 2), lg(`数字`), odd(`数字1`), round(`数字1`), rounddown(`数字1`),roundup(`数字1`), sign(`数字1`), sqrt(`数字1`) from Table1",
+        'expected_result':[
+            {'ABS(`数字1`)': 4.55, 'CEILING(`数字1`)': 5, 'EVEN(`数字1`)': 6, 'EXP(2)': 7.38905609893065, 'FLOOR(`数字1`)': 4, 'INT(`数字1`)': 4, 'LG(`数字`)': 1, 'LOG(`数字`, 2)': 3.321928094887362, '数字1': 4.55, 'ODD(`数字1`)': 5, 'ROUND(`数字1`)': 5, 'ROUNDDOWN(`数字1`)': 4, 'ROUNDUP(`数字1`)': 5, 'SIGN(`数字1`)': 1, 'SQRT(`数字1`)': 2.1330729007701543, '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
+            {'ABS(`数字1`)': 100, 'CEILING(`数字1`)': -100, 'EVEN(`数字1`)': -100, 'EXP(2)': 7.38905609893065, 'FLOOR(`数字1`)': -100, 'INT(`数字1`)': -100, 'LG(`数字`)': 1.301029995663981, 'LOG(`数字`, 2)': 4.321928094887362, '数字1': -100, 'ODD(`数字1`)': -99, 'ROUND(`数字1`)': -100, 'ROUNDDOWN(`数字1`)': -100, 'ROUNDUP(`数字1`)': -100, 'SIGN(`数字1`)': -1, 'SQRT(`数字1`)': None, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
+            {'ABS(`数字1`)': 3.33, 'CEILING(`数字1`)': -3, 'EVEN(`数字1`)': -2, 'EXP(2)': 7.38905609893065, 'FLOOR(`数字1`)': -4, 'INT(`数字1`)': -4, 'LG(`数字`)': 1.6989700043360187, 'LOG(`数字`, 2)': 5.643856189774724, '数字1': -3.33, 'ODD(`数字1`)': -3, 'ROUND(`数字1`)': -3, 'ROUNDDOWN(`数字1`)': -3, 'ROUNDUP(`数字1`)': -4, 'SIGN(`数字1`)': -1, 'SQRT(`数字1`)': None, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
+            {'ABS(`数字1`)': 10, 'CEILING(`数字1`)': 10, 'EVEN(`数字1`)': 10, 'EXP(2)': 7.38905609893065, 'FLOOR(`数字1`)': 10, 'INT(`数字1`)': 10, 'LG(`数字`)': 1.4771212547196624, 'LOG(`数字`, 2)': 4.906890595608519, '数字1': 10, 'ODD(`数字1`)': 11, 'ROUND(`数字1`)': 10, 'ROUNDDOWN(`数字1`)': 10, 'ROUNDUP(`数字1`)': 10, 'SIGN(`数字1`)': 1, 'SQRT(`数字1`)': 3.1622776601683795, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 日期, 日期带分钟, 创建时间, date(2021,10,8), dateAdd(`日期`, 2, 'days'), datedif('2021-01-01', `日期`, 'D'), day(`日期带分钟`), eomonth(`日期`, 3), hour(`日期带分钟`), minute(`日期带分钟`), month(`日期带分钟`), second(`创建时间`), year(`日期`) from Table1",
+        'expected_result':[
+            {'日期': '2021-09-26', 'DATE(2021,10,8)': '2021-10-08T00:00:00+08:00', "DATEADD(`日期`, 2, 'days')": '2021-09-28T00:00:00+08:00', "DATEDIF('2021-01-01', `日期`, 'D')": 268, 'DAY(`日期带分钟`)': 29, 'EOMONTH(`日期`, 3)': '2021-12-31T00:00:00+08:00', 'HOUR(`日期带分钟`)': 9, 'MINUTE(`日期带分钟`)': 30, 'MONTH(`日期带分钟`)': 9, 'SECOND(`创建时间`)': 57, 'YEAR(`日期`)': 2021, '创建时间': '2021-09-26T02:39:57.067Z', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '日期带分钟': '2021-09-29 09:30:00'},
+            {'日期': '2021-09-27', 'DATE(2021,10,8)': '2021-10-08T00:00:00+08:00', "DATEADD(`日期`, 2, 'days')": '2021-09-29T00:00:00+08:00', "DATEDIF('2021-01-01', `日期`, 'D')": 269, 'DAY(`日期带分钟`)': 30, 'EOMONTH(`日期`, 3)': '2021-12-31T00:00:00+08:00', 'HOUR(`日期带分钟`)': 10, 'MINUTE(`日期带分钟`)': 0, 'MONTH(`日期带分钟`)': 9, 'SECOND(`创建时间`)': 57, 'YEAR(`日期`)': 2021, '创建时间': '2021-09-26T02:39:57.068Z', '_id': 'COASY7zyRaOUZAWKyFEyzQ', '日期带分钟': '2021-09-30 10:00:00'},
+            {'日期': '2021-03-02', 'DATE(2021,10,8)': '2021-10-08T00:00:00+08:00', "DATEADD(`日期`, 2, 'days')": '2021-03-04T00:00:00+08:00', "DATEDIF('2021-01-01', `日期`, 'D')": 60, 'DAY(`日期带分钟`)': 1, 'EOMONTH(`日期`, 3)': '2021-06-30T00:00:00+08:00', 'HOUR(`日期带分钟`)': 15, 'MINUTE(`日期带分钟`)': 8, 'MONTH(`日期带分钟`)': 10, 'SECOND(`创建时间`)': 57, 'YEAR(`日期`)': 2021, '创建时间': '2021-09-26T02:39:57.068Z', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '日期带分钟': '2021-10-01 15:08:00'},
+            {'日期': '2021-09-16', 'DATE(2021,10,8)': '2021-10-08T00:00:00+08:00', "DATEADD(`日期`, 2, 'days')": '2021-09-18T00:00:00+08:00', "DATEDIF('2021-01-01', `日期`, 'D')": 258, 'DAY(`日期带分钟`)': 3, 'EOMONTH(`日期`, 3)': '2021-12-31T00:00:00+08:00', 'HOUR(`日期带分钟`)': 8, 'MINUTE(`日期带分钟`)': 0, 'MONTH(`日期带分钟`)': 9, 'SECOND(`创建时间`)': 3, 'YEAR(`日期`)': 2021, '创建时间': '2021-09-30T06:08:03.422Z', '_id': 'RKMQdKjQTamnaP23JrOZ1w', '日期带分钟': '2021-09-03 08:00:00'}
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 勾选, 数字, 数字1, and(`勾选`, 3), if(`数字` > 20, 100, -100), ifs(`数字`>30, 200, `数字1` < 0, -200), not(`勾选`), or(`勾选`, ''), xor(`勾选`, ''), switch(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default') from Table1",
+        'expected_result':[
+            {'AND(`勾选`, 3)': True, 'IF(`数字` > 20, 100, -100)': -100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': None, '数字1': 4.55, 'NOT(`勾选`)': False, "OR(`勾选`, '')": True, '勾选': True, "XOR(`勾选`, '')": True, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', -100)": 'Low', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
+            {'AND(`勾选`, 3)': True, 'IF(`数字` > 20, 100, -100)': -100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': -200, '数字1': -100, 'NOT(`勾选`)': False, "OR(`勾选`, '')": True, '勾选': True, "XOR(`勾选`, '')": True, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', -100)": 'Fare', '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
+            {'AND(`勾选`, 3)': False, 'IF(`数字` > 20, 100, -100)': 100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': 200, '数字1': -3.33, 'NOT(`勾选`)': True, "OR(`勾选`, '')": False, "XOR(`勾选`, '')": False, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default')": 'default', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
+            {'AND(`勾选`, 3)': False, 'IF(`数字` > 20, 100, -100)': 100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': None, '数字1': 10, 'NOT(`勾选`)': True, "OR(`勾选`, '')": False, "XOR(`勾选`, '')": False, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', -100)": 'High', '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
+        ]
+    },
+    {
+        'type': 'Common',
+        'sql': "select 数字, 数字1, 文本, 地理位置2, average(`数字`, `数字1`), counta(`文本`, `地理位置2`), countall(`数字`, `数字1`, `文本`, `地理位置2`), countblank(`数字`, `数字1`, `文本`, `地理位置2`) from Table1",
+        'expected_result':[
+            {'文本': 'AA', 'AVERAGE(`数字`, `数字1`)': 7.275, 'COUNTA(`文本`, `地理位置2`)': 2, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 0, '数字1': 4.55, '地理位置2': {'lat': 42.5158032188098, 'lng': 113.20517001118883}, '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
+            {'文本': 'AA', 'AVERAGE(`数字`, `数字1`)': -40, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': -100, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
+            {'文本': 'BB', 'AVERAGE(`数字`, `数字1`)': 23.335, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': -3.33, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
+            {'文本': 'BB', 'AVERAGE(`数字`, `数字1`)': 20, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': 10, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}]
     },
 
 
