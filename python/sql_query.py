@@ -43,46 +43,66 @@ def test_common_query(query_result, expected_result):
         return False
 
 def run():
-    error_msgs = []
-    for ref in REFERENCES:
-        sql = ref.get('sql')
-        query_type = ref.get('type')
-        query_result = base.query(sql)
-        expected_result = ref.get('expected_result')
-        error_msg = ''
-        if query_type == 'Map':
-            query_result = query_result[0]
-            expected_result = expected_result[0]
-            pass_test, key, value, expected_value, error_type = test_map_data(query_result, expected_result)
-            if not pass_test:
-                if error_type == 'unmatched':
-                    error_msg = "SQL:%s \nValue unmatched: %s column %s expected, \nbut %s returned " % (sql, key, expected_value, value)
-                elif error_type == 'miss_keys':
-                    error_msg = "SQL: %s \n Value unmatched: %s column data does not return" % (sql,key)
+    failed_sql = []
+    pass_num = 0
+    fail_num = 0
+    error_msg = ''
+    try:
+        for ref in REFERENCES:
+            sql = ref.get('sql')
+            query_type = ref.get('type')
+            query_result = base.query(sql)
+            expected_result = ref.get('expected_result')
+            error_flag = False
+            if query_type == 'Map':
+                query_result = query_result[0]
+                expected_result = expected_result[0]
+                pass_test, key, value, expected_value, error_type = test_map_data(query_result, expected_result)
+                if not pass_test:
+                    if error_type == 'unmatched':
+                        fail_num += 1
+                        error_flag = True
+                    elif error_type == 'miss_keys':
+                        fail_num += 1
+                        error_flag = True
+                else:
+                    pass_num += 1
 
-        if query_type == 'GroupBy':
-            pass_test = test_group_by(query_result, expected_result)
-            if not pass_test:
-                error_msg = "SQL: %s \n Value unmatched: %s expected, \nbut %s returned " % (sql, expected_result, query_result)
+            if query_type == 'GroupBy':
+                pass_test = test_group_by(query_result, expected_result)
+                if not pass_test:
+                    fail_num += 1
+                    error_flag = True
+                else:
+                    pass_num += 1
+            if query_type == 'OrderBy':
+                pass_test = test_order_by(query_result, expected_result)
+                if not pass_test:
+                    fail_num += 1
+                    error_flag = True
+                else:
+                    pass_num += 1
+            if query_type == 'Common':
+                pass_test = test_common_query(query_result, expected_result)
+                if not pass_test:
+                    fail_num += 1
+                    error_flag = True
+                else:
+                    pass_num += 1
 
-        if query_type == 'OrderBy':
-            pass_test = test_order_by(query_result, expected_result)
-            if not pass_test:
-                error_msg = "SQL: %s \n Value error: %s expected, \nbut %s returned " % (sql, expected_result, query_result)
+            if error_flag:
+                failed_sql.append(sql)
+    except Exception as e:
+        error_msg = e
 
-        if query_type == 'Common':
-            pass_test = test_common_query(query_result, expected_result)
-            if not pass_test:
-                error_msg = "SQL: %s \n Value error: %s expected, \nbut %s returned " % (sql, expected_result, query_result)
-                print("Value error: %s expected, but %s returned " % (expected_result, query_result))
-
-        if error_msg:
-            error_msgs.append(error_msg)
-
-    results = "Test success"
-    if error_msgs:
-        results = "\n\n".join(error_msgs)
-    base.append_row('TestResults', {'Results': results})
+    base.append_row(
+        'TestResults',
+        {
+            'SuccessNo': pass_num,
+            'FailNo': fail_num,
+            'FailedSQL': failed_sql and "\n\n".join(failed_sql) or "",
+            'ErrorMsg': error_msg
+        })
 
 
 if __name__ == '__main__':
