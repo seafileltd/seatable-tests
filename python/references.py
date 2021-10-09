@@ -32,8 +32,7 @@ REFERENCES = [
                 "URL": "https://www.baidu.com",
                 "评分": 4,
                 "公式": 20,
-                "链接其他记录": [{'row_id': 'VVvX3I8ISSSBN8-nqRlshQ', 'display_value': 'aa'},
-                           {'row_id': 'VuCer3xMTs-9g3NoUKkR2g', 'display_value': 'cc'}],
+                "链接其他记录": [{'row_id': 'VuCer3xMTs-9g3NoUKkR2g', 'display_value': 'cc'}],
                 "链接公式": 2,
                 "地理位置": {
                     'city': '北京市',
@@ -49,7 +48,9 @@ REFERENCES = [
                 "修改者": "jiwei.ran@seafile.com",
                 "创建时间": "2021-09-26T02:39:57.067Z",
                 "修改时间": "2021-09-30T03:58:55.052Z",
-                "自动序号": "Test-0001"
+                "自动序号": "Test-0001",
+                "Year": 2019,
+                "if": 1,
             }
         ]
     },
