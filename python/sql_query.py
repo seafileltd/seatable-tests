@@ -1,6 +1,6 @@
 from seatable_api import Base, context
 
-from python.references import REFERENCES
+from references import REFERENCES
 
 api_token = context.api_token or "48d7488c9d7267abc020c5a8be497088522dd562"
 server_url = context.server_url or "https://dev.seatable.cn/"
