@@ -49,7 +49,7 @@ REFERENCES = [
                 "创建时间": "2021-09-26T02:39:57.067Z",
                 "修改时间": "2021-09-30T03:58:55.052Z",
                 "自动序号": "Test-0001",
-                "Year": 2019,
+                "Year":[{'row_id': 'VuCer3xMTs-9g3NoUKkR2g', 'display_value': 2019}],
                 "if": 1,
             }
         ]
