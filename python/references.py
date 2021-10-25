@@ -194,10 +194,10 @@ REFERENCES = [
         'type': 'Common',
         'sql': "select _id, 文本, 数字, URL, T(`文本`), T(`数字`), text(`数字`,'dollar'), upper(`URL`) from Table1",
         'expected_result':[
-            {'文本': 'AA', 'T(`数字`)': '', 'T(`文本`)': 'AA', "TEXT(`数字`,'dollar')": '$10.00', 'UPPER(`URL`)': 'HTTPS://WWW.BAIDU.COM', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', 'URL': 'https://www.baidu.com', '数字': 10},
-            {'文本': 'AA', 'T(`数字`)': '', 'T(`文本`)': 'AA', "TEXT(`数字`,'dollar')": '$20.00', 'UPPER(`URL`)': 'HTTPS://GOOGLE.COM', '_id': 'COASY7zyRaOUZAWKyFEyzQ', 'URL': 'https://google.com', '数字': 20},
-            {'文本': 'BB', 'T(`数字`)': '', 'T(`文本`)': 'BB', "TEXT(`数字`,'dollar')": '$50.00', 'UPPER(`URL`)': 'HTTPS://DEV.SEATABLE.CN', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', 'URL': 'https://dev.seatable.cn', '数字': 50},
-            {'文本': 'BB', 'T(`数字`)': '', 'T(`文本`)': 'BB', "TEXT(`数字`,'dollar')": '$30.00', 'UPPER(`URL`)': 'HTTPS://CLOUD.SEATABLE.IO', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io', '数字': 30}
+            {'文本': 'AA', 'T(`数字`)': '', 'T(`文本`)': 'AA', "TEXT(`数字`,'dollar')": '$10.000000', 'UPPER(`URL`)': 'HTTPS://WWW.BAIDU.COM', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', 'URL': 'https://www.baidu.com', '数字': 10},
+            {'文本': 'AA', 'T(`数字`)': '', 'T(`文本`)': 'AA', "TEXT(`数字`,'dollar')": '$20.000000', 'UPPER(`URL`)': 'HTTPS://GOOGLE.COM', '_id': 'COASY7zyRaOUZAWKyFEyzQ', 'URL': 'https://google.com', '数字': 20},
+            {'文本': 'BB', 'T(`数字`)': '', 'T(`文本`)': 'BB', "TEXT(`数字`,'dollar')": '$50.000000', 'UPPER(`URL`)': 'HTTPS://DEV.SEATABLE.CN', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', 'URL': 'https://dev.seatable.cn', '数字': 50},
+            {'文本': 'BB', 'T(`数字`)': '', 'T(`文本`)': 'BB', "TEXT(`数字`,'dollar')": '$30.000000', 'UPPER(`URL`)': 'HTTPS://CLOUD.SEATABLE.IO', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io', '数字': 30}
         ]
     },
     {
@@ -226,8 +226,8 @@ REFERENCES = [
         'expected_result':[
             {'AND(`勾选`, 3)': True, 'IF(`数字` > 20, 100, -100)': -100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': None, '数字1': 4.55, 'NOT(`勾选`)': False, "OR(`勾选`, '')": True, '勾选': True, "XOR(`勾选`, '')": True, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default')": 'Low', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
             {'AND(`勾选`, 3)': True, 'IF(`数字` > 20, 100, -100)': -100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': -200, '数字1': -100, 'NOT(`勾选`)': False, "OR(`勾选`, '')": True, '勾选': True, "XOR(`勾选`, '')": True, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default')": 'Fare', '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
-            {'AND(`勾选`, 3)': False, 'IF(`数字` > 20, 100, -100)': 100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': 200, '数字1': -3.33, 'NOT(`勾选`)': True, "OR(`勾选`, '')": False, "XOR(`勾选`, '')": False, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default')": 'default', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
-            {'AND(`勾选`, 3)': False, 'IF(`数字` > 20, 100, -100)': 100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': None, '数字1': 10, 'NOT(`勾选`)': True, "OR(`勾选`, '')": False, "XOR(`勾选`, '')": False, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default')": 'High', '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
+            {'AND(`勾选`, 3)': False, 'IF(`数字` > 20, 100, -100)': 100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': 200, '数字1': -3.33, 'NOT(`勾选`)': True, "OR(`勾选`, '')": False, '勾选': None, "XOR(`勾选`, '')": False, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default')": 'default', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
+            {'AND(`勾选`, 3)': False, 'IF(`数字` > 20, 100, -100)': 100, 'IFS(`数字`>30, 200, `数字1` < 0, -200)': None, '数字1': 10, 'NOT(`勾选`)': True, "OR(`勾选`, '')": False,   '勾选': None, "XOR(`勾选`, '')": False, "SWITCH(`数字`, 10,'Low', 20, 'Fare', 30, 'High', 'default')": 'High', '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}
         ]
 
     },
@@ -235,9 +235,12 @@ REFERENCES = [
         'type': 'Common',
         'sql': "select _id, 数字, 数字1, 文本, 地理位置2, average(`数字`, `数字1`), counta(`文本`, `地理位置2`), countall(`数字`, `数字1`, `文本`, `地理位置2`), countblank(`数字`, `数字1`, `文本`, `地理位置2`) from Table1",
         'expected_result':[
+
             {'文本': 'AA', 'AVERAGE(`数字`, `数字1`)': 7.275, 'COUNTA(`文本`, `地理位置2`)': 2, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 0, '数字1': 4.55, '地理位置2': {'lat': 42.5158032188098, 'lng': 113.20517001118883}, '_id': 'G9c0P_fmQ8WG-lL5RG8bng', '数字': 10},
-            {'文本': 'AA', 'AVERAGE(`数字`, `数字1`)': -40, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': -100, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20},
-            {'文本': 'BB', 'AVERAGE(`数字`, `数字1`)': 23.335, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': -3.33, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50},
-            {'文本': 'BB', 'AVERAGE(`数字`, `数字1`)': 20, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': 10, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30}]
+            {'文本': 'AA', 'AVERAGE(`数字`, `数字1`)': -40, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': -100, '_id': 'COASY7zyRaOUZAWKyFEyzQ', '数字': 20, '地理位置2': None},
+            {'文本': 'BB', 'AVERAGE(`数字`, `数字1`)': 23.335, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': -3.33, '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', '数字': 50,'地理位置2': None },
+            {'文本': 'BB', 'AVERAGE(`数字`, `数字1`)': 20, 'COUNTA(`文本`, `地理位置2`)': 1, 'COUNTALL(`数字`, `数字1`, `文本`, `地理位置2`)': 4, 'COUNTBLANK(`数字`, `数字1`, `文本`, `地理位置2`)': 1, '数字1': 10, '_id': 'RKMQdKjQTamnaP23JrOZ1w', '数字': 30,'地理位置2': None}
+        ]
+
     },
 ]
