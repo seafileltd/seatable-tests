@@ -41,7 +41,6 @@ def test_common_query(query_result, expected_result):
         return True
     else:
         return False
-
 def run():
     failed_sql = []
     pass_num = 0
@@ -94,6 +93,10 @@ def run():
                 failed_sql.append(sql)
     except Exception as e:
         error_msg = e
+
+    # print(pass_num)
+    # print(fail_num)
+    # print("\n".join(failed_sql))
 
     base.append_row(
         'TestResults',
