@@ -46,7 +46,7 @@ REFERENCES = [
                 "创建者": "jiwei.ran@seafile.com",
                 "修改者": "jiwei.ran@seafile.com",
                 "创建时间": "2021-09-26T02:39:57.067Z",
-                "修改时间": "2021-09-30T03:58:55.052Z",
+                # "修改时间": "2021-09-30T03:58:55.052Z",
                 "自动序号": "Test-0001",
                 # "Year":[{'row_id': 'VuCer3xMTs-9g3NoUKkR2g', 'display_value': 2019}],
                 "Year": [2019],
@@ -66,8 +66,8 @@ REFERENCES = [
         'type': 'GroupBy',
         'sql': "Select 单选, avg(数字) from Table1 group by 单选",
         'expected_result': [
-            {'单选': '男', 'AVG(数字)': 30},
-            {'单选': '女', 'AVG(数字)': 25}
+            {'单选': '男', 'avg(数字)': 30},
+            {'单选': '女', 'avg(数字)': 25}
         ]
     },
     {
