@@ -22,10 +22,10 @@ def test_map_data(query_result_dict, expected_result_dict):
     key_diff = expected_result_dict_keys.difference(query_result_dict_keys)
     if key_diff:
         return False, key_diff, None, None, 'miss_keys'
-    for key, value in query_result_dict.items():
-        expected_value = expected_result_dict.get(key)
-        if value != expected_value:
-            return False, key, value, expected_value, 'unmatched'
+    for key, value in expected_result_dict.items():
+        query_value = query_result_dict.get(key)
+        if value != query_value:
+            return False, key, value, query_value, 'unmatched'
     return True, None, None, None, None
 
 def test_order_by(query_result, expected_result):
