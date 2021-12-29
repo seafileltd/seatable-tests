@@ -1,4 +1,5 @@
 import requests
+from seatable_api import Base, context
 from constants import DTABLE_SERVER_URL, DTABLE_WEB_SERVICE_URL, \
     TEST_USER_EMAIL, TEST_USER_PASSWORD, \
     TEST_READ_ONLY_USER_EMAIL, TEST_READ_ONLY_USER_PASSWORD, TEST_TABLE_NAME
@@ -565,7 +566,7 @@ class DTableServerTest(object):
 
         return success, error_msg
 
-    def run(self):
+    def run(self, print_out=True):
         test_funcs_in_order = [
             # ping test
             self.dtable_server_ping_test,
@@ -607,7 +608,8 @@ class DTableServerTest(object):
         pass_num, fail_num, error_list = 0, 0, []
         for func in test_funcs_in_order:
             success, err_msg = func()
-            print(success, err_msg)
+            if print_out:
+                print(success, err_msg)
             if success:
                 pass_num += 1
             else:
@@ -620,14 +622,26 @@ class DTableServerTest(object):
         test_result = {
             'SuccessNo': pass_num,
             'FailNo': fail_num,
-            'error_msg': error_list and "\n\n".join(error_list) or "",
+            'ErrorMsg': error_list and "\n\n".join(error_list) or "",
         }
-
-        print(test_result)
 
         return test_result
 
 
 if __name__ == '__main__':
+
+    LOCAL_TEST = False
+
     dst = DTableServerTest()
-    test_result = dst.run()
+    test_result = dst.run(print_out=LOCAL_TEST)
+
+    Table_name = 'DTableServerTest'
+
+    if not LOCAL_TEST:
+        api_token = context.api_token or "4e118011faa89319b07e426204925d7585dd5037"
+        server_url = context.server_url or "https://dev.seatable.cn/"
+
+        base = Base(api_token, server_url)
+        base.auth()
+        base.append_row(Table_name, test_result)
+
