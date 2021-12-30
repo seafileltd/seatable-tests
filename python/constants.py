@@ -10,7 +10,8 @@
 
 # dev account
 DTABLE_WEB_SERVICE_URL = 'https://dev.seatable.cn'
-DTABLE_SERVER_URL = 'https://dtable-server-dev-api.seatable.cn'
+DTABLE_SERVER_API_URL = 'https://dtable-server-dev-api.seatable.cn'
+DTABLE_SERVER_URL = 'https://dtable-server-dev.seatable.cn'
 # TEST_USER_EMAIL = '7b33259c2c3248aeb0347efbb1ab5df5@auth.local'
 TEST_USER_EMAIL = 'seatable-test-01@seafile.com'
 TEST_USER_PASSWORD = '12345678'

@@ -1,6 +1,6 @@
 import requests
 from seatable_api import Base, context
-from constants import DTABLE_SERVER_URL, DTABLE_WEB_SERVICE_URL, \
+from constants import DTABLE_SERVER_API_URL, DTABLE_SERVER_URL,DTABLE_WEB_SERVICE_URL, \
     TEST_USER_EMAIL, TEST_USER_PASSWORD, \
     TEST_READ_ONLY_USER_EMAIL, TEST_READ_ONLY_USER_PASSWORD, TEST_TABLE_NAME
 
@@ -326,7 +326,7 @@ class DTableServerTest(object):
     # API test for dtable-server, including get row, add row, update row, delete row and so on
     def get_dtable_test(self):
         name = 'get dtable test'
-        url = DTABLE_SERVER_URL.rstrip('/') + "/dtables/%s/" % self.dtable_uuid
+        url = DTABLE_SERVER_API_URL.rstrip('/') + "/dtables/%s/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(self.dtable_access_token)
         try:
@@ -361,7 +361,7 @@ class DTableServerTest(object):
         return success, error_msg
 
     def _create_row(self, name, token, expected_status_code=200):
-        url = DTABLE_SERVER_URL.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = DTABLE_SERVER_API_URL.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(token)
         headers['Content-Type'] = 'application/json'
@@ -391,7 +391,7 @@ class DTableServerTest(object):
         return success, error_msg
 
     def _update_row(self, name, token, expected_status_code=200):
-        url = DTABLE_SERVER_URL.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = DTABLE_SERVER_API_URL.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(token)
         headers['Content-Type'] = 'application/json'
@@ -422,7 +422,7 @@ class DTableServerTest(object):
         return success, error_msg
 
     def _delete_row(self, name, token, expected_status_code=200):
-        url = DTABLE_SERVER_URL.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = DTABLE_SERVER_API_URL.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(token)
         headers['Content-Type'] = 'application/json'
@@ -477,7 +477,7 @@ class DTableServerTest(object):
 
     def filter_row_test(self):
         name = "filter row test"
-        url = DTABLE_SERVER_URL.rstrip('/') + "/api/v1/dtables/%s/filtered-rows/?table_name=Table1" % self.dtable_uuid
+        url = DTABLE_SERVER_API_URL.rstrip('/') + "/api/v1/dtables/%s/filtered-rows/?table_name=Table1" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(self.dtable_access_token)
         headers['Content-Type'] = 'application/json'
@@ -519,7 +519,7 @@ class DTableServerTest(object):
 
     def add_row_comment_test(self):
         name = "add row comment"
-        url = DTABLE_SERVER_URL.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s&table_id=%s' % (
+        url = DTABLE_SERVER_API_URL.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s&table_id=%s' % (
             self.dtable_uuid,
             self.row_id,
             self.table_id,
@@ -553,7 +553,7 @@ class DTableServerTest(object):
 
     def get_row_comment_test(self):
         name = "get row comment"
-        url = DTABLE_SERVER_URL.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s' % (
+        url = DTABLE_SERVER_API_URL.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s' % (
             self.dtable_uuid,
             self.row_id,
         )
@@ -582,7 +582,7 @@ class DTableServerTest(object):
 
     def delete_row_comment_test(self):
         name = "delete row comment"
-        url = DTABLE_SERVER_URL.rstrip('/') + '/api/v1/dtables/%s/comments/%s/' % (
+        url = DTABLE_SERVER_API_URL.rstrip('/') + '/api/v1/dtables/%s/comments/%s/' % (
             self.dtable_uuid,
             self.comment_id
         )
@@ -614,7 +614,7 @@ class DTableServerTest(object):
     def run(self, print_out=True):
         test_funcs_in_order = [
             # ping test
-            # self.dtable_server_ping_test,
+            self.dtable_server_ping_test,
             self.dtable_web_ping_test,
 
             # dtable-web-test user
