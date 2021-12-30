@@ -21,6 +21,9 @@ class DTableServerTest(object):
         self.row_id = ''
         self.comment_id = ''
 
+        self.username = ''
+        self.readonly_username = ''
+
     def _format_error_msg(self, api_url, api_name, msg):
         return "[API:%s][URL: %s] error: %s" % (api_name, api_url, msg)
 
@@ -109,6 +112,48 @@ class DTableServerTest(object):
             error_msg = self._format_error_msg(url, name, err)
         return success, error_msg
 
+    def get_user_info_test(self):
+        name = "dtable web get user info"
+        url = DTABLE_WEB_SERVICE_URL.rstrip('/') + '/api/v2.1/user/'
+        success, error_msg = False, None
+        headers = self._format_header(self.auth_token)
+        try:
+            res = requests.get(
+                url,
+                headers = headers
+            )
+            status_code = res.status_code
+            if status_code == 200:
+                success = True
+                self.username = res.json().get('email')
+            else:
+                err = 'Unexpected status code : %s, expected %s' % (status_code, 200)
+                error_msg = self._format_error_msg(url, name, err)
+        except Exception as err:
+            error_msg = self._format_error_msg(url, name, err)
+        return success, error_msg
+
+    def get_readonly_user_info_test(self):
+        name = "dtable web get user info"
+        url = DTABLE_WEB_SERVICE_URL.rstrip('/') + '/api/v2.1/user/'
+        success, error_msg = False, None
+        headers = self._format_header(self.read_auth_token)
+        try:
+            res = requests.get(
+                url,
+                headers = headers
+            )
+            status_code = res.status_code
+            if status_code == 200:
+                success = True
+                self.readonly_username = res.json().get('email')
+            else:
+                err = 'Unexpected status code : %s, expected %s' % (status_code, 200)
+                error_msg = self._format_error_msg(url, name, err)
+        except Exception as err:
+            error_msg = self._format_error_msg(url, name, err)
+        return success, error_msg
+
     def get_workspaces_test(self):
         name = "dtable web get workspaces"
         url = DTABLE_WEB_SERVICE_URL.rstrip('/') + '/api/v2.1/workspaces/'
@@ -142,7 +187,7 @@ class DTableServerTest(object):
         success, error_msg = False, None
         request_data = {
             'name': TEST_TABLE_NAME,
-            'owner': TEST_USER_EMAIL,
+            'owner': self.username,
         }
         headers = self._format_header(self.auth_token)
         try:
@@ -203,7 +248,7 @@ class DTableServerTest(object):
         success, error_msg = False, None
         headers = self._format_header(self.auth_token)
         request_data = {
-            'email': TEST_READ_ONLY_USER_EMAIL,
+            'email': self.readonly_username,
             'permission': 'r'
         }
         try:
@@ -569,17 +614,19 @@ class DTableServerTest(object):
     def run(self, print_out=True):
         test_funcs_in_order = [
             # ping test
-            self.dtable_server_ping_test,
+            # self.dtable_server_ping_test,
             self.dtable_web_ping_test,
 
             # dtable-web-test user
             self.dtable_web_auth_token_test,
+            self.get_user_info_test,
             self.get_workspaces_test,
             self.create_base_test,
             self.get_base_access_token_test,
 
             # dtable-web-test readonly user
             self.dtable_web_auth_token_readonly_test,
+            self.get_readonly_user_info_test,
             self.share_base_to_readonly_user_test,
             self.get_base_readonly_access_token_test,
 
@@ -624,13 +671,14 @@ class DTableServerTest(object):
             'FailNo': fail_num,
             'ErrorMsg': error_list and "\n\n".join(error_list) or "",
         }
-
+        if print_out:
+            print(test_result)
         return test_result
 
 
 if __name__ == '__main__':
 
-    LOCAL_TEST = False
+    LOCAL_TEST = True
 
     dst = DTableServerTest()
     test_result = dst.run(print_out=LOCAL_TEST)
