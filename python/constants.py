@@ -7,7 +7,7 @@
 # TEST_READ_ONLY_USER_PASSWORD = '111'
 # TEST_TABLE_NAME = 'TableForTest'
 
-
+ENABLE_CLUSTER = True
 # dev account
 DTABLE_WEB_SERVICE_URL = 'https://dev.seatable.cn'
 DTABLE_SERVER_API_URL = 'https://dtable-server-dev-api.seatable.cn'
