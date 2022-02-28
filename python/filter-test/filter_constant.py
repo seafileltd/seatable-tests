@@ -1,7 +1,3 @@
-USERNAME = "350178982@qq.com"
-PWD = "111"
-
-
 ENABLE_CLUSTER = True
 API_TOKEN = "1c3db106dd06b7eac9775f89d6601e1667750a5c"
 DTABLE_WEB_SERVER_URL = "https://dev.seatable.cn"
