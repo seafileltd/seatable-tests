@@ -13,7 +13,7 @@ DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"
 
 # LOCAL_TEST = True
 
-TEXT_FILTER_CONSTANTS = [
+FILTER_CONSTANTS = [
     {
         "filter": {'column_key': '0000', 'filter_predicate': 'contains', 'filter_term': 'A'},
         "view_name": "filter_contains"
