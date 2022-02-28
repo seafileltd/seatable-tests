@@ -685,7 +685,7 @@ class DTableServerTest(object):
 
 if __name__ == '__main__':
 
-    LOCAL_TEST = True
+    LOCAL_TEST = False
 
     dst = DTableServerTest()
     test_result = dst.run(print_out=LOCAL_TEST)
