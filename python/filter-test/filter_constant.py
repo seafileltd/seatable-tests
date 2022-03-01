@@ -13,7 +13,14 @@ DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"
 
 # LOCAL_TEST = True
 
-FILTER_CONSTANTS = [
+# local test
+# ENABLE_CLUSTER = False
+# API_TOKEN = "daec335184fe70863443d88443a12ef61ddfbf68"
+# DTABLE_WEB_SERVER_URL = "http://127.0.0.1:8000"
+# DTABLE_SERVER_URL = "http://127.0.0.1:5000"
+# DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"
+
+TEXT_FILTER_CONSTANTS = [
     {
         "filter": {'column_key': '0000', 'filter_predicate': 'contains', 'filter_term': 'A'},
         "view_name": "filter_contains"
