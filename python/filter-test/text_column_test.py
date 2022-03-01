@@ -49,7 +49,7 @@ def filter_rows(filter_item):
 def run(base, table_name, print_out=True):
     pass_num, fail_num, unmatch_filters, col_type = 0, 0, [], COLUMN_TYPE
 
-    for f in FILTER_CONSTANTS:
+    for f in TEXT_FILTER_CONSTANTS:
         filter_item = f.get('filter')
         view_name = f.get('view_name')
 
