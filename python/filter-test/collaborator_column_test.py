@@ -59,8 +59,6 @@ def run(base, table_name, print_out=True):
         if len(filter_rows_db) != len(filter_rows_page):
             fail_num += 1
             unmatch_filters.append(filter_item)
-            print(len(filter_rows_db))
-            print(len(filter_rows_page))
 
         else:
             row_ids_sorted_db = sorted([row.get('_id') for row in filter_rows_db])
