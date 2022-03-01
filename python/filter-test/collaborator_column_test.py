@@ -1,7 +1,7 @@
 import requests
 import json
 from seatable_api import Base
-from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, FILTER_CONSTANTS, \
+from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, COLLABORATOR_FILTER_CONSTANTS, \
     DTABLE_SERVER_URL, DTABLE_SERVER_API_URL, ENABLE_CLUSTER
 
 if ENABLE_CLUSTER:
@@ -9,7 +9,7 @@ if ENABLE_CLUSTER:
 else:
     dtable_server_url = DTABLE_SERVER_URL
 
-COLUMN_TYPE = 'text'
+COLUMN_TYPE = 'collaborator'
 
 
 base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
@@ -38,7 +38,7 @@ def filter_rows(filter_item):
     )
 
     params = {
-        "table_id": "0000",
+        "table_id": "x2nE",
         "filter_conditions": format_filters(filter_item)
     }
 
@@ -49,7 +49,7 @@ def filter_rows(filter_item):
 def run(base, table_name, print_out=True):
     pass_num, fail_num, unmatch_filters, col_type = 0, 0, [], COLUMN_TYPE
 
-    for f in FILTER_CONSTANTS:
+    for f in COLLABORATOR_FILTER_CONSTANTS:
         filter_item = f.get('filter')
         view_name = f.get('view_name')
 
@@ -59,6 +59,8 @@ def run(base, table_name, print_out=True):
         if len(filter_rows_db) != len(filter_rows_page):
             fail_num += 1
             unmatch_filters.append(filter_item)
+            print(len(filter_rows_db))
+            print(len(filter_rows_page))
 
         else:
             row_ids_sorted_db = sorted([row.get('_id') for row in filter_rows_db])
@@ -95,7 +97,7 @@ if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
 
-    table_name = 'TextFilter'
+    table_name = 'CollaboratorFilter'
     test_result_table_name = 'TestResult'
 
     result = run(base, table_name, print_out=LOCAL_TEST)
