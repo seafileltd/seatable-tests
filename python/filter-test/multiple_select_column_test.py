@@ -52,7 +52,6 @@ def run(base, table_name, print_out=True):
     for f in MULTIPLE_SELECT_FILTER_CONSTANTS:
         filter_item = f.get('filter')
         view_name = f.get('view_name')
-        print(view_name)
         filter_rows_db = filter_rows(filter_item)
         filter_rows_page = base.list_rows(table_name, view_name)
 
@@ -84,7 +83,14 @@ def run(base, table_name, print_out=True):
         print(test_result)
     return test_result
 
+def run_multiple_select_column_test(base, local_test):
+    table_name = 'MultipleSelectFilter'
+    test_result_table_name = 'TestResult'
 
+    result = run(base, table_name, print_out=local_test)
+
+    if not local_test:
+        base.append_row(test_result_table_name, result)
 
 if __name__ == '__main__':
     # filter_rows()
@@ -95,11 +101,4 @@ if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
 
-    table_name = 'MultipleSelectFilter'
-    test_result_table_name = 'TestResult'
-
-    result = run(base, table_name, print_out=LOCAL_TEST)
-
-    if not LOCAL_TEST:
-
-        base.append_row(test_result_table_name, result)
+    run_multiple_select_column_test(base, LOCAL_TEST)

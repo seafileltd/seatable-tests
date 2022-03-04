@@ -85,6 +85,15 @@ def run(base, table_name, print_out=True):
     return test_result
 
 
+def run_number_colum_test(base, local_test):
+    table_name = 'NumberFilter'
+    test_result_table_name = 'TestResult'
+
+    result = run(base, table_name, print_out=local_test)
+
+    if not local_test:
+        base.append_row(test_result_table_name, result)
+
 
 if __name__ == '__main__':
     # filter_rows()
@@ -95,11 +104,4 @@ if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
 
-    table_name = 'NumberFilter'
-    test_result_table_name = 'TestResult'
-
-    result = run(base, table_name, print_out=LOCAL_TEST)
-
-    if not LOCAL_TEST:
-
-        base.append_row(test_result_table_name, result)
+    run_number_colum_test(base, LOCAL_TEST)

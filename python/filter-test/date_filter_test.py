@@ -1,7 +1,7 @@
 import requests
 import json
 from seatable_api import Base
-from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, MULTIPLE_SELECT_FILTER_CONSTANTS, \
+from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, DATE_FILTER_CONSTANT, \
     DTABLE_SERVER_URL, DTABLE_SERVER_API_URL, ENABLE_CLUSTER
 
 if ENABLE_CLUSTER:
@@ -9,7 +9,7 @@ if ENABLE_CLUSTER:
 else:
     dtable_server_url = DTABLE_SERVER_URL
 
-COLUMN_TYPE = 'multiple-select'
+COLUMN_TYPE = 'date'
 
 
 base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
@@ -38,7 +38,7 @@ def filter_rows(filter_item):
     )
 
     params = {
-        "table_id": "VFBq",
+        "table_id": "q4Y1",
         "filter_conditions": format_filters(filter_item)
     }
 
@@ -49,10 +49,9 @@ def filter_rows(filter_item):
 def run(base, table_name, print_out=True):
     pass_num, fail_num, unmatch_filters, col_type = 0, 0, [], COLUMN_TYPE
 
-    for f in MULTIPLE_SELECT_FILTER_CONSTANTS:
+    for f in DATE_FILTER_CONSTANT:
         filter_item = f.get('filter')
         view_name = f.get('view_name')
-        print(view_name)
         filter_rows_db = filter_rows(filter_item)
         filter_rows_page = base.list_rows(table_name, view_name)
 
@@ -63,6 +62,7 @@ def run(base, table_name, print_out=True):
         else:
             row_ids_sorted_db = sorted([row.get('_id') for row in filter_rows_db])
             row_ids_sorted_page = sorted([row.get('_id') for row in filter_rows_page])
+
 
 
             if row_ids_sorted_db != row_ids_sorted_page:
@@ -84,7 +84,15 @@ def run(base, table_name, print_out=True):
         print(test_result)
     return test_result
 
+def run_date_column_test(base, local_test):
+    table_name = 'DateFilter'
+    test_result_table_name = 'TestResult'
 
+    result = run(base, table_name, print_out=local_test)
+
+    if not local_test:
+        #
+        base.append_row(test_result_table_name, result)
 
 if __name__ == '__main__':
     # filter_rows()
@@ -95,20 +103,4 @@ if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
 
-    table_name = 'DateFilter'
-    test_result_table_name = 'TestResult'
-
-    # import datetime
-    # today = datetime.datetime.today()
-    # for delta in range(-45, 45):
-    #     day = today + datetime.timedelta(days=delta)
-    #     day_format = day.strftime("%Y-%m-%d")
-    #     base.append_row(table_name, {'Date': day_format})
-
-
-
-    # result = run(base, table_name, print_out=LOCAL_TEST)
-
-    # if not LOCAL_TEST:
-    #
-    #     base.append_row(test_result_table_name, result)
+    run_date_column_test(base, LOCAL_TEST)
