@@ -869,3 +869,196 @@ DATE_FILTER_CONSTANT = [
         'view_name': 'filter_not_empty'
     }
 ]
+
+EMAIL_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'contains', 'filter_term': '8982'},
+        "view_name": "filter_contains"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'does_not_contain', 'filter_term': '8982'},
+        "view_name": "filter_not_contain"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is', 'filter_term': 'r350178982@126.com'},
+        "view_name": "filter_is"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is_not', 'filter_term': 'r350178982@126.com'},
+        "view_name": "filter_is_not"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+URL_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'contains', 'filter_term': 'baidu'},
+        "view_name": "filter_contains"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'does_not_contain', 'filter_term': 'baidu'},
+        "view_name": "filter_not_contain"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is', 'filter_term': 'http://www.baidu.com'},
+        "view_name": "filter_is"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is_not', 'filter_term': 'http://www.baidu.com'},
+        "view_name": "filter_is_not"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'Z1cQ', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+CHECKBOX_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'eLiz', 'filter_predicate': 'is', 'filter_term': True},
+        "view_name": "filter_check"
+    },
+    {
+        "filter": {'column_key': 'eLiz', 'filter_predicate': 'is', 'filter_term': False},
+        "view_name": "filter_uncheck"
+    },
+
+]
+
+RATE_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'equal', 'filter_term': '5'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'not_equal', 'filter_term': '5'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'less', 'filter_term': '5'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'greater', 'filter_term': '5'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'less_or_equal', 'filter_term': '5'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'greater_or_equal', 'filter_term': '5'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'oykY', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+GEOLOCATION_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'q70F', 'filter_predicate': 'contains', 'filter_term': '北京'},
+        "view_name": "filter_contains"
+    },
+    {
+        "filter": {'column_key': 'q70F', 'filter_predicate': 'does_not_contain', 'filter_term': '北京'},
+        "view_name": "filter_not_contain"
+    },
+    {
+        "filter": {'column_key': 'q70F', 'filter_predicate': 'is', 'filter_term': '澳门澳门望德堂区'},
+        "view_name": "filter_is"
+    },
+    {
+        "filter": {'column_key': 'q70F', 'filter_predicate': 'is_not', 'filter_term': '澳门澳门望德堂区'},
+        "view_name": "filter_is_not"
+    },
+    {
+        "filter": {'column_key': 'q70F', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'q70F', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+CREATOR_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': '_creator', 'filter_predicate': 'contains', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_contains_c"
+    },
+    {
+        "filter": {'column_key': '_creator', 'filter_predicate': 'does_not_contain', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_not_contain_c"
+    },
+    {
+        "filter": {'column_key': '_creator', 'filter_predicate': 'is', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_is_c"
+    },
+    {
+        "filter": {'column_key': '_creator', 'filter_predicate': 'is_not', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_is_not_c"
+    },
+
+]
+
+MODIFIER_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'contains', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_contains_m"
+    },
+    {
+        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'does_not_contain', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_not_contain_m"
+    },
+    {
+        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'is', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_is_m"
+    },
+    {
+        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'is_not', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "view_name": "filter_is_not_m"
+    },
+
+]
+
+
+AUTONUMBER_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': '0000', 'filter_predicate': 'contains', 'filter_term': '1'},
+        "view_name": "filter_contains"
+    },
+    {
+        "filter": {'column_key': '0000', 'filter_predicate': 'does_not_contain', 'filter_term': '1'},
+        "view_name": "filter_not_contain"
+    },
+    {
+        "filter": {'column_key': '0000', 'filter_predicate': 'is', 'filter_term': 'Test-0005'},
+        "view_name": "filter_is"
+    },
+    {
+        "filter": {'column_key': '0000', 'filter_predicate': 'is_not', 'filter_term': 'Test-0005'},
+        "view_name": "filter_is_not"
+    },
+
+]
