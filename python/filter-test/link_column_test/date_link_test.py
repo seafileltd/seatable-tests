@@ -1,7 +1,7 @@
 import requests
 import json
 from seatable_api import Base
-from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, GEOLOCATION_FILTER_CONSTANTS, \
+from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, DATE_FILTER_CONSTANT, \
     DTABLE_SERVER_URL, DTABLE_SERVER_API_URL, ENABLE_CLUSTER
 
 if ENABLE_CLUSTER:
@@ -9,12 +9,19 @@ if ENABLE_CLUSTER:
 else:
     dtable_server_url = DTABLE_SERVER_URL
 
-COLUMN_TYPE = 'geolocation'
+COLUMN_TYPE = 'link-date'
 
 
 base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
 base.auth()
 
+
+def generate_filter_constant():
+    filter_constant = DATE_FILTER_CONSTANT
+    for item in filter_constant:
+        item['filter'].update({'column_key': 'RwNc'})
+
+    return filter_constant
 
 def format_filters(filter_item):
     return {
@@ -38,7 +45,7 @@ def filter_rows(filter_item):
     )
 
     params = {
-        "table_id": "ye1O",
+        "table_id": "ZU6f",
         "filter_conditions": format_filters(filter_item)
     }
 
@@ -48,11 +55,10 @@ def filter_rows(filter_item):
 
 def run(base, table_name, print_out=True):
     pass_num, fail_num, unmatch_filters, col_type = 0, 0, [], COLUMN_TYPE
-
-    for f in GEOLOCATION_FILTER_CONSTANTS:
+    filter_constant = generate_filter_constant()
+    for f in filter_constant:
         filter_item = f.get('filter')
         view_name = f.get('view_name')
-
         filter_rows_db = filter_rows(filter_item)
         filter_rows_page = base.list_rows(table_name, view_name)
 
@@ -63,6 +69,7 @@ def run(base, table_name, print_out=True):
         else:
             row_ids_sorted_db = sorted([row.get('_id') for row in filter_rows_db])
             row_ids_sorted_page = sorted([row.get('_id') for row in filter_rows_page])
+
 
 
             if row_ids_sorted_db != row_ids_sorted_page:
@@ -84,22 +91,25 @@ def run(base, table_name, print_out=True):
         print(test_result)
     return test_result
 
-def run_location_column_test(base, local_test):
-    table_name = 'GeoLocationFilter'
+def run_date_link_column_test(base, local_test):
+    table_name = 'LinkDate'
     test_result_table_name = 'TestResult'
 
     result = run(base, table_name, print_out=local_test)
 
     if not local_test:
+        #
         base.append_row(test_result_table_name, result)
 
 if __name__ == '__main__':
     # filter_rows()
     # get_row_by_view()
 
-    LOCAL_TEST = False
 
+
+    LOCAL_TEST = False
+    #
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
-
-    run_location_column_test(base, LOCAL_TEST)
+    #
+    run_date_link_column_test(base, LOCAL_TEST)

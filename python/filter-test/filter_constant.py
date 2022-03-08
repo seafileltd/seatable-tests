@@ -1062,3 +1062,251 @@ AUTONUMBER_FILTER_CONSTANTS = [
     },
 
 ]
+
+STRING_FORMULA_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'zLvt', 'filter_predicate': 'contains', 'filter_term': 'A'},
+        "view_name": "filter_contains"
+    },
+    {
+        "filter": {'column_key': 'zLvt', 'filter_predicate': 'does_not_contain', 'filter_term': 'A'},
+        "view_name": "filter_not_contain"
+    },
+    {
+        "filter": {'column_key': 'zLvt', 'filter_predicate': 'is', 'filter_term': 'aa'},
+        "view_name": "filter_is"
+    },
+    {
+        "filter": {'column_key': 'zLvt', 'filter_predicate': 'is_not', 'filter_term': 'aa'},
+        "view_name": "filter_is_not"
+    },
+    {
+        "filter": {'column_key': 'zLvt', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'zLvt', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+BOOL_FORMULA_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'Pp5b', 'filter_predicate': 'is', 'filter_term': True},
+        "view_name": "filter_checked"
+    },
+    {
+        "filter": {'column_key': 'Pp5b', 'filter_predicate': 'is', 'filter_term': False},
+        "view_name": "filter_uncheck"
+    },
+
+]
+
+NUMBER_FORMULA_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'equal', 'filter_term': '6'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'not_equal', 'filter_term': '6'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'less', 'filter_term': '6'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'greater', 'filter_term': '6'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'less_or_equal', 'filter_term': '6'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'greater_or_equal', 'filter_term': '6'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'G3HW', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+TEXT_LINK_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'ohNr', 'filter_predicate': 'contains', 'filter_term': 'B'},
+        "view_name": "filter_contains"
+    },
+    {
+        "filter": {'column_key': 'ohNr', 'filter_predicate': 'does_not_contain', 'filter_term': 'B'},
+        "view_name": "filter_not_contain"
+    },
+    {
+        "filter": {'column_key': 'ohNr', 'filter_predicate': 'is', 'filter_term': 'B'},
+        "view_name": "filter_is"
+    },
+    {
+        "filter": {'column_key': 'ohNr', 'filter_predicate': 'is_not', 'filter_term': 'B'},
+        "view_name": "filter_is_not"
+    },
+    {
+        "filter": {'column_key': 'ohNr', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'ohNr', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+SINGLE_SELECT_LINK_FILTER_CONSTANTS = [
+    {
+        "filter": {
+            'column_key': '4m7p',
+            'filter_predicate': 'has_any_of',
+            'filter_term': ["65472", "183974"]
+        },
+        "view_name": "filter_has_any_of"
+    },
+    {
+        "filter": {
+            'column_key': '4m7p',
+            'filter_predicate': 'has_all_of',
+            'filter_term': ["65472", "183974"]
+        },
+        "view_name": "filter_has_all_of"
+    },
+    {
+        "filter": {
+            'column_key': '4m7p',
+            'filter_predicate': 'has_none_of',
+            'filter_term': ["65472", "183974"]
+        },
+        "view_name": "filter_has_none_of"
+    },
+    {
+        "filter": {
+            'column_key': '4m7p',
+            'filter_predicate': 'is_exactly',
+            'filter_term': ["65472", "183974"]
+        },
+        "view_name": "filter_is_exactly"
+    },
+    {
+        "filter": {
+            'column_key': '4m7p',
+            'filter_predicate': 'is_empty',
+            'filter_term': []
+        },
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {
+            'column_key': '4m7p',
+            'filter_predicate': 'is_not_empty',
+            'filter_term': []
+        },
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+NUMBER_LINK_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'equal', 'filter_term': '6'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'not_equal', 'filter_term': '6'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'less', 'filter_term': '6'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'greater', 'filter_term': '6'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'less_or_equal', 'filter_term': '6'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'greater_or_equal', 'filter_term': '6'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'Bh91', 'filter_predicate': 'is_not_empty', 'filter_term': '6'},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+AUTONUMBER_LINK_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': '992E', 'filter_predicate': 'contains', 'filter_term': '005'},
+        "view_name": "filter_contains"
+    },
+    {
+        "filter": {'column_key': '992E', 'filter_predicate': 'does_not_contain', 'filter_term': '005'},
+        "view_name": "filter_not_contain"
+    },
+    {
+        "filter": {'column_key': '992E', 'filter_predicate': 'is', 'filter_term': 'link-0005'},
+        "view_name": "filter_is"
+    },
+    {
+        "filter": {'column_key': '992E', 'filter_predicate': 'is_not', 'filter_term': 'link-0005'},
+        "view_name": "filter_is_not"
+    },
+
+]
+
+FORMULA_LINK_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'equal', 'filter_term': '15'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'not_equal', 'filter_term': '15'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'less', 'filter_term': '15'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'greater', 'filter_term': '15'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'less_or_equal', 'filter_term': '15'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'greater_or_equal', 'filter_term': '15'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': '14a3', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]

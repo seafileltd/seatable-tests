@@ -1,7 +1,7 @@
 import requests
 import json
 from seatable_api import Base
-from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, GEOLOCATION_FILTER_CONSTANTS, \
+from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL, NUMBER_FORMULA_FILTER_CONSTANTS, \
     DTABLE_SERVER_URL, DTABLE_SERVER_API_URL, ENABLE_CLUSTER
 
 if ENABLE_CLUSTER:
@@ -9,7 +9,7 @@ if ENABLE_CLUSTER:
 else:
     dtable_server_url = DTABLE_SERVER_URL
 
-COLUMN_TYPE = 'geolocation'
+COLUMN_TYPE = 'formula-number'
 
 
 base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
@@ -38,7 +38,7 @@ def filter_rows(filter_item):
     )
 
     params = {
-        "table_id": "ye1O",
+        "table_id": "vo4O",
         "filter_conditions": format_filters(filter_item)
     }
 
@@ -49,7 +49,7 @@ def filter_rows(filter_item):
 def run(base, table_name, print_out=True):
     pass_num, fail_num, unmatch_filters, col_type = 0, 0, [], COLUMN_TYPE
 
-    for f in GEOLOCATION_FILTER_CONSTANTS:
+    for f in NUMBER_FORMULA_FILTER_CONSTANTS:
         filter_item = f.get('filter')
         view_name = f.get('view_name')
 
@@ -84,14 +84,16 @@ def run(base, table_name, print_out=True):
         print(test_result)
     return test_result
 
-def run_location_column_test(base, local_test):
-    table_name = 'GeoLocationFilter'
+
+def run_number_formula_column_test(base, local_test):
+    table_name = 'NumberFormula'
     test_result_table_name = 'TestResult'
 
     result = run(base, table_name, print_out=local_test)
 
     if not local_test:
         base.append_row(test_result_table_name, result)
+
 
 if __name__ == '__main__':
     # filter_rows()
@@ -102,4 +104,4 @@ if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
 
-    run_location_column_test(base, LOCAL_TEST)
+    run_number_formula_column_test(base, LOCAL_TEST)

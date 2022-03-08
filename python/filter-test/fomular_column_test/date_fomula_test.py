@@ -51,7 +51,6 @@ def filter_rows(filter_item):
 
     res = requests.post(api_url, json=params, headers=base.headers)
     filtered_rows = res.json().get('rows')
-    print(res.content)
     return filtered_rows
 
 def run(base, table_name, print_out=True):
@@ -108,7 +107,7 @@ if __name__ == '__main__':
 
 
 
-    LOCAL_TEST = True
+    LOCAL_TEST = False
     #
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()

@@ -56,10 +56,6 @@ def run(base, table_name, print_out=True):
         filter_rows_db = filter_rows(filter_item)
         filter_rows_page = base.list_rows(table_name, view_name)
 
-        print("db-length-%s: page-length-%s" % (
-            len(filter_rows_db), len(filter_rows_page)
-        ))
-
         if len(filter_rows_db) != len(filter_rows_page):
             fail_num += 1
             unmatch_filters.append(filter_item)
