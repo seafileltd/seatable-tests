@@ -73,15 +73,6 @@ if __name__ == '__main__':
         run_single_select_link_column_test,
     ]
 
-
-
-
-
-
-
-
-
-
     for func in test_funcs:
         func(base, LOCAL_TEST)
         time.sleep(5)
