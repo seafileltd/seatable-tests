@@ -19,6 +19,18 @@ from column_test.url_column_test import run_url_column_test
 from column_test.geolocation_column_test import run_location_column_test
 from column_test.autonumber_filter_test import run_auto_number_colum_test
 
+from fomular_column_test.date_fomula_test import run_date_formula_column_test
+from fomular_column_test.bool_formula_test import run_bool_formula_column_test
+from fomular_column_test.number_formula_test import run_number_formula_column_test
+from fomular_column_test.string_formula_test import run_string_formula_column_test
+
+from link_column_test.auto_number_link_test import run_auto_number_link_column_test
+from link_column_test.date_link_test import run_date_link_column_test
+from link_column_test.formula_link_test import run_formula_link_column_test
+from link_column_test.text_link_test import run_text_link_column_test
+from link_column_test.number_link_test import run_number_link_column_test
+from link_column_test.single_select_link_test import run_single_select_link_column_test
+
 
 
 
@@ -47,6 +59,18 @@ if __name__ == '__main__':
         run_email_column_test,
         run_rate_colum_test,
         run_auto_number_colum_test,
+
+        run_date_formula_column_test,
+        run_string_formula_column_test,
+        run_number_formula_column_test,
+        run_bool_formula_column_test,
+
+        run_auto_number_link_column_test,
+        run_text_link_column_test,
+        run_number_link_column_test,
+        run_formula_link_column_test,
+        run_date_link_column_test,
+        run_single_select_link_column_test,
     ]
 
 

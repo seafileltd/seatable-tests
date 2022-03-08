@@ -9,7 +9,7 @@ if ENABLE_CLUSTER:
 else:
     dtable_server_url = DTABLE_SERVER_URL
 
-COLUMN_TYPE = 'link-text'
+COLUMN_TYPE = 'link-formula'
 
 
 base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
