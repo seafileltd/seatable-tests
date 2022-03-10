@@ -38,7 +38,7 @@ if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
 
-    LOCAL_TEST = True
+    LOCAL_TEST = False
 
     test_funcs = [
         run_text_column_test,
@@ -75,4 +75,4 @@ if __name__ == '__main__':
 
     for func in test_funcs:
         func(base, LOCAL_TEST)
-        time.sleep(5)
+        time.sleep(30)
