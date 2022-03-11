@@ -976,22 +976,6 @@ RATE_FILTER_CONSTANTS = [
 
 GEOLOCATION_FILTER_CONSTANTS = [
     {
-        "filter": {'column_key': 'q70F', 'filter_predicate': 'contains', 'filter_term': '北京'},
-        "view_name": "filter_contains"
-    },
-    {
-        "filter": {'column_key': 'q70F', 'filter_predicate': 'does_not_contain', 'filter_term': '北京'},
-        "view_name": "filter_not_contain"
-    },
-    {
-        "filter": {'column_key': 'q70F', 'filter_predicate': 'is', 'filter_term': '澳门澳门望德堂区'},
-        "view_name": "filter_is"
-    },
-    {
-        "filter": {'column_key': 'q70F', 'filter_predicate': 'is_not', 'filter_term': '澳门澳门望德堂区'},
-        "view_name": "filter_is_not"
-    },
-    {
         "filter": {'column_key': 'q70F', 'filter_predicate': 'is_empty', 'filter_term': ''},
         "view_name": "filter_is_empty"
     },
@@ -1041,7 +1025,6 @@ MODIFIER_FILTER_CONSTANTS = [
     },
 
 ]
-
 
 AUTONUMBER_FILTER_CONSTANTS = [
     {
