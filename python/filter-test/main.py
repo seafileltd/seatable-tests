@@ -1,21 +1,44 @@
 from seatable_api import Base
 import time
 from filter_constant import API_TOKEN, DTABLE_WEB_SERVER_URL
-from text_column_test import run_text_column_test
-from number_column_test import run_number_colum_test
-from multiple_select_column_test import run_multiple_select_column_test
-from single_select_column_test import run_single_column_test
-from image_column_test import run_image_column_test
-from file_column_test import run_file_column_test
-from duration_filter_test import run_duration_column_test
-from date_filter_test import run_date_column_test
-from collaborator_column_test import run_collaborator_column_test
+from column_test.text_column_test import run_text_column_test
+from column_test.number_column_test import run_number_colum_test
+from column_test.multiple_select_column_test import run_multiple_select_column_test
+from column_test.single_select_column_test import run_single_column_test
+from column_test.image_column_test import run_image_column_test
+from column_test.file_column_test import run_file_column_test
+from column_test.duration_filter_test import run_duration_column_test
+from column_test.date_filter_test import run_date_column_test
+from column_test.collaborator_column_test import run_collaborator_column_test
+from column_test.email_column_test import run_email_column_test
+from column_test.rate_filter_test import run_rate_colum_test
+from column_test.creator_column_test import run_creator_colum_test
+from column_test.check_box_filter_test import run_checkbox_column_test
+from column_test.modifier_column_test import run_modifier_colum_test
+from column_test.url_column_test import run_url_column_test
+from column_test.geolocation_column_test import run_location_column_test
+from column_test.autonumber_filter_test import run_auto_number_colum_test
+
+from fomular_column_test.date_fomula_test import run_date_formula_column_test
+from fomular_column_test.bool_formula_test import run_bool_formula_column_test
+from fomular_column_test.number_formula_test import run_number_formula_column_test
+from fomular_column_test.string_formula_test import run_string_formula_column_test
+
+from link_column_test.auto_number_link_test import run_auto_number_link_column_test
+from link_column_test.date_link_test import run_date_link_column_test
+from link_column_test.formula_link_test import run_formula_link_column_test
+from link_column_test.text_link_test import run_text_link_column_test
+from link_column_test.number_link_test import run_number_link_column_test
+from link_column_test.single_select_link_test import run_single_select_link_column_test
+
+
+
 
 if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
 
-    LOCAL_TEST = True
+    LOCAL_TEST = False
 
     test_funcs = [
         run_text_column_test,
@@ -27,8 +50,29 @@ if __name__ == '__main__':
         run_file_column_test,
         run_date_column_test,
         run_collaborator_column_test,
+
+        run_url_column_test,
+        run_location_column_test,
+        run_modifier_colum_test,
+        run_creator_colum_test,
+        run_checkbox_column_test,
+        run_email_column_test,
+        run_rate_colum_test,
+        run_auto_number_colum_test,
+
+        run_date_formula_column_test,
+        run_string_formula_column_test,
+        run_number_formula_column_test,
+        run_bool_formula_column_test,
+
+        run_auto_number_link_column_test,
+        run_text_link_column_test,
+        run_number_link_column_test,
+        run_formula_link_column_test,
+        run_date_link_column_test,
+        run_single_select_link_column_test,
     ]
 
     for func in test_funcs:
         func(base, LOCAL_TEST)
-        time.sleep(5)
+        time.sleep(30)
