@@ -3,22 +3,6 @@ API_TOKEN = "1c3db106dd06b7eac9775f89d6601e1667750a5c"
 DTABLE_WEB_SERVER_URL = "https://dev.seatable.cn"
 DTABLE_SERVER_URL = "https://dtable-server-dev.seatable.cn"
 DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"
-#
-# local test
-# ENABLE_CLUSTER = False
-# API_TOKEN = "daec335184fe70863443d88443a12ef61ddfbf68"
-# DTABLE_WEB_SERVER_URL = "http://127.0.0.1:8000"
-# DTABLE_SERVER_URL = "http://127.0.0.1:5000"
-# DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"
-
-# LOCAL_TEST = True
-
-# local test
-# ENABLE_CLUSTER = False
-# API_TOKEN = "daec335184fe70863443d88443a12ef61ddfbf68"
-# DTABLE_WEB_SERVER_URL = "http://127.0.0.1:8000"
-# DTABLE_SERVER_URL = "http://127.0.0.1:5000"
-# DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"
 
 TEXT_FILTER_CONSTANTS = [
     {
