@@ -31,6 +31,8 @@ from link_column_test.text_link_test import run_text_link_column_test
 from link_column_test.number_link_test import run_number_link_column_test
 from link_column_test.single_select_link_test import run_single_select_link_column_test
 
+from link_formula_column_test.empty_test import run_link_formula_column_test
+
 
 
 
@@ -71,6 +73,8 @@ if __name__ == '__main__':
         run_formula_link_column_test,
         run_date_link_column_test,
         run_single_select_link_column_test,
+
+        run_link_formula_column_test,
     ]
 
     for func in test_funcs:

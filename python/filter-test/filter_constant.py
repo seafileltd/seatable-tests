@@ -976,7 +976,8 @@ CREATOR_FILTER_CONSTANTS = [
         "view_name": "filter_contains_c"
     },
     {
-        "filter": {'column_key': '_creator', 'filter_predicate': 'does_not_contain', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "filter": {'column_key': '_creator', 'filter_predicate': 'does_not_contain',
+                   'filter_term': ["jiwei.ran@seafile.com"]},
         "view_name": "filter_not_contain_c"
     },
     {
@@ -992,11 +993,13 @@ CREATOR_FILTER_CONSTANTS = [
 
 MODIFIER_FILTER_CONSTANTS = [
     {
-        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'contains', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'contains',
+                   'filter_term': ["jiwei.ran@seafile.com"]},
         "view_name": "filter_contains_m"
     },
     {
-        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'does_not_contain', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'does_not_contain',
+                   'filter_term': ["jiwei.ran@seafile.com"]},
         "view_name": "filter_not_contain_m"
     },
     {
@@ -1004,7 +1007,8 @@ MODIFIER_FILTER_CONSTANTS = [
         "view_name": "filter_is_m"
     },
     {
-        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'is_not', 'filter_term': ["jiwei.ran@seafile.com"]},
+        "filter": {'column_key': '_last_modifier', 'filter_predicate': 'is_not',
+                   'filter_term': ["jiwei.ran@seafile.com"]},
         "view_name": "filter_is_not_m"
     },
 
@@ -1274,6 +1278,251 @@ FORMULA_LINK_FILTER_CONSTANTS = [
     {
         "filter": {'column_key': '14a3', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
         "view_name": "filter_not_empty"
+    },
+
+]
+
+NUMBER_FORMULA_PERCENTAGE_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'equal', 'filter_term': '50%'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'not_equal', 'filter_term': '50%'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'less', 'filter_term': '50%'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'greater', 'filter_term': '50%'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'less_or_equal', 'filter_term': '50%'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'greater_or_equal', 'filter_term': '50%'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'bniR', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+NUMBER_FORMULA_CURRENCY_US_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'equal', 'filter_term': '$15'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'not_equal', 'filter_term': '$15'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'less', 'filter_term': '$15'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'greater', 'filter_term': '$15'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'less_or_equal', 'filter_term': '$15'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'greater_or_equal', 'filter_term': '$15'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'ks14', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+NUMBER_FORMULA_SPLIT_BY_COMMA_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'equal', 'filter_term': '100,000'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'not_equal', 'filter_term': '100,000'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'less', 'filter_term': '100,000'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'greater', 'filter_term': '100,000'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'less_or_equal', 'filter_term': '100,000'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'greater_or_equal', 'filter_term': '100,000'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+NUMBER_FORMULA_DOT_SPLIT_BY_DOT_FILTER_CONSTANTS = [
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'equal', 'filter_term': '28.92546550'},
+        "view_name": "filter_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'not_equal', 'filter_term': '28.92546550'},
+        "view_name": "filter_not_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'less', 'filter_term': '28.92546550'},
+        "view_name": "filter_less"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'greater', 'filter_term': '28.92546550'},
+        "view_name": "filter_greater"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'less_or_equal', 'filter_term': '28.92546550'},
+        "view_name": "filter_less_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'greater_or_equal', 'filter_term': '28.92546550'},
+        "view_name": "filter_greater_equal"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'is_empty', 'filter_term': ''},
+        "view_name": "filter_is_empty"
+    },
+    {
+        "filter": {'column_key': 'rrrq', 'filter_predicate': 'is_not_empty', 'filter_term': ''},
+        "view_name": "filter_not_empty"
+    },
+
+]
+
+LINK_FORMULA_EMPTY_FILTER = [
+    {
+        "filter": {'column_key': 'YlR7', 'filter_predicate': 'is_empty', 'filter_term': '', 'name': 'lookup_text'},
+        "view_name": "empty_lookup_text"
+    },
+    {
+        "filter": {'column_key': '5Euc', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_number'},
+        "view_name": "empty_lookup_number"
+    },
+    {
+        "filter": {'column_key': '23Cs', 'filter_predicate': 'is_empty', 'filter_term': [],'name': 'lookup_collaborator'},
+        "view_name": "empty_lookup_collaborator"
+    },
+    {
+        "filter": {'column_key': 'zVBz', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_date'},
+        "view_name": "empty_lookup_date"
+    },
+    {
+        "filter": {'column_key': 'Q5A5', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_duration'},
+        "view_name": "empty_lookup_duration"
+    },
+    {
+        "filter": {'column_key': 'fzyo', 'filter_predicate': 'is_empty', 'filter_term': [],'name': 'lookup_single_select'},
+        "view_name": "empty_lookup_single_select"
+    },
+    {
+        "filter": {'column_key': 'RrfC', 'filter_predicate': 'is_empty', 'filter_term': [],'name': 'lookup_multiple_select'},
+        "view_name": "empty_lookup_multiple_select"
+    },
+    {
+        "filter": {'column_key': '98jW', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_image'},
+        "view_name": "empty_lookup_image"
+    },
+    {
+        "filter": {'column_key': 'lETo', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_file'},
+        "view_name": "empty_lookup_file"
+    },
+    {
+        "filter": {'column_key': '6SDM', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_email'},
+        "view_name": "empty_lookup_email"
+    },
+    {
+        "filter": {'column_key': 'DSS4', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_url'},
+        "view_name": "empty_lookup_URL"
+    },
+
+    {
+        "filter": {'column_key': '6Mj0', 'filter_predicate': 'is', 'filter_term': False,'name': 'lookup_checkbox'},
+        "view_name": "empty_lookup_checkbox"
+    },
+    {
+        "filter": {'column_key': 'hMmq', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_rate'},
+        "view_name": "empty_lookup_rate"
+    },
+    {
+        "filter": {'column_key': 'A6C7', 'filter_predicate': 'is_empty', 'filter_term': [],'name': 'lookup_creator'},
+        "view_name": "empty_lookup_creator"
+    },
+    {
+        "filter": {'column_key': 'bstH', 'filter_predicate': 'is_empty', 'filter_term': [],'name': 'lookup_modifier'},
+        "view_name": "empty_lookup_modifier"
+    },
+    {
+        "filter": {'column_key': '5XbW', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_ctime'},
+        "view_name": "empty_lookup_ctime"
+    },
+    {
+        "filter": {'column_key': 'B3J7', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_mtime'},
+        "view_name": "empty_lookup_mtime"
+    },
+    {
+        "filter": {'column_key': 'O417', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_location'},
+        "view_name": "empty_lookup_location"
+    },
+    {
+        "filter": {'column_key': 'oH2J', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'lookup_formula'},
+        "view_name": "empty_lookup_formula"
+    },
+    {
+        "filter": {'column_key': 'ygYd', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'countlinks'},
+        "view_name": "empty_countlinks"
+    },
+    {
+        "filter": {'column_key': '4wMs', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'rollup_text'},
+        "view_name": "empty_rollup_text"
+    },
+    {
+        "filter": {'column_key': 'kw4q', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'rollup_number'},
+        "view_name": "empty_rollup_number"
+    },
+    {
+        "filter": {'column_key': 'j3Hl', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'rollup_date'},
+        "view_name": "empty_rollup_date"
+    },
+    {
+        "filter": {'column_key': 'pmGX', 'filter_predicate': 'is_empty', 'filter_term': '','name': 'findmin'},
+        "view_name": "empty_findmin"
     },
 
 ]
