@@ -60,7 +60,9 @@ TABLE_NAME_ID_MAP = {
     'LinkAutoNumber': 'K2Y3',
     'LinkFormula': 'W3ta',
     'LinkLookUpEmpty': 'E1zi',
-    'LinkLookUpOtherFilters':'36DV'
+    'LinkLookUpOtherFilters':'36DV',
+
+    'LookUpFormula':'vPb8'
 }
 
 def format_filters(filter_item):
