@@ -47,7 +47,7 @@ TABLE_NAME_ID_MAP = {
     'GeoLocationFilter': 'ye1O',
     'CreatorAndModifilerFilter': 't0wJ',
     'AutoNumberFilter': 'dr15',
-    'FormulaDateFilter': '47rb',
+    # 'FormulaDateFilter': '47rb',
     'DateFomula': 'XLJY',
     'StringFormula': '9U68',
     'BoolFormula': 'Jfe7',
@@ -154,5 +154,5 @@ def run(base, local_test=True, result_table='TestResult'):
 if __name__ == '__main__':
     base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
-    LOCAL_TEST = True
-    run(base)
+    LOCAL_TEST = False
+    run(base, LOCAL_TEST)
