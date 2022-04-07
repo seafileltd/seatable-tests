@@ -20,14 +20,13 @@ EXCLUDE_TABLE_NAME_ID_MAP = {
     'TestResult': 'MCkc',
     'TestResultNumber': 'C603',
 
-    'NumberFormula': 'vo4O',
-    'NumberFormulaPercentage': 'v0BK',
-    'NumberFormulaCurrencyUS': '209x',
+    # 'NumberFormula': 'vo4O',
+    # 'NumberFormulaPercentage': 'v0BK',
+    # 'NumberFormulaCurrencyUS': '209x',
     'Link-Parent': 'olDx',
 
-    'NumberFomulaSplitByComma': 'vVZ1',
     'NumberTmp': 'n7P8',
-    'NumberFomulaDotSplitByDot': '2x7k'
+
 }
 
 TABLE_NAME_ID_MAP = {
@@ -62,7 +61,13 @@ TABLE_NAME_ID_MAP = {
     'LinkLookUpEmpty': 'E1zi',
     'LinkLookUpOtherFilters':'36DV',
 
-    'LookUpFormula':'vPb8'
+    'LookUpFormula':'vPb8',
+
+    'NumberFormula': 'vo4O',
+    'NumberFormulaPercentage': 'v0BK',
+    'NumberFormulaCurrencyUS': '209x',
+    'NumberFomulaSplitByComma': 'vVZ1',
+    'NumberFomulaDotSplitByDot': '2x7k'
 }
 
 def format_filters(filter_item):
