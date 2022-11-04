@@ -70,13 +70,13 @@ TABLE_NAME_ID_MAP = {
     'NumberFomulaDotSplitByDot': '2x7k'
 }
 
-def format_filters(filter_item):
+def format_filters(filter_items):
     return {
 
         "filter_groups": [
             {
                 "filters": [
-                    filter_item,
+                    filter_item for filter_item in filter_items
                 ],
             },
         ],
@@ -87,7 +87,7 @@ VIEW_NAME_EXCLUDE = ['默认视图', '归档']
 
 
 # db-API returns
-def filter_rows(filter_item, table_id):
+def filter_rows(filter_items, table_id):
     api_url = "%s/api/v1/internal/dtables/%s/filter-rows/" % (
         dtable_server_url.rstrip("/"),
         base.dtable_uuid,
@@ -95,7 +95,7 @@ def filter_rows(filter_item, table_id):
 
     params = {
         "table_id": table_id,
-        "filter_conditions": format_filters(filter_item)
+        "filter_conditions": format_filters(filter_items)
     }
 
     res = requests.post(api_url, json=params, headers=base.headers)
@@ -120,14 +120,14 @@ def run(base, local_test=True, result_table='TestResult'):
             filter_items = view.get('filters')
             if not filter_items:
                 continue
-            filter_item = filter_items[0]
-            filter_item['view_name'] = view_name
-            filter_rows_db = filter_rows(filter_item, table_id)
+            for filter_item in filter_items:
+                filter_item['view_name'] = view_name
+            filter_rows_db = filter_rows(filter_items, table_id)
             filter_rows_page = base.list_rows(table_name, view_name)
 
             if len(filter_rows_db) != len(filter_rows_page):
                 fail_num += 1
-                unmatch_filters.append(filter_item)
+                unmatch_filters.append(filter_items)
 
             else:
                 row_ids_sorted_db = sorted([row.get('_id') for row in filter_rows_db])
@@ -135,7 +135,7 @@ def run(base, local_test=True, result_table='TestResult'):
 
                 if row_ids_sorted_db != row_ids_sorted_page:
                     fail_num += 1
-                    unmatch_filters.append(filter_item)
+                    unmatch_filters.append(filter_items)
                 else:
                     pass_num += 1
 
@@ -153,7 +153,7 @@ def run(base, local_test=True, result_table='TestResult'):
         else:
             base.append_row(result_table, test_result)
 
-        time.sleep(60)
+        time.sleep(10)
 
 
 if __name__ == '__main__':
