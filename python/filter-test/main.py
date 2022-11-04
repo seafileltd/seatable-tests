@@ -153,7 +153,7 @@ def run(base, local_test=True, result_table='TestResult'):
         else:
             base.append_row(result_table, test_result)
 
-        time.sleep(10)
+        time.sleep(60)
 
 
 if __name__ == '__main__':
