@@ -8,11 +8,11 @@ DTABLE_WEB_SERVER_URL = "https://dev.seatable.cn"
 DTABLE_SERVER_URL = "https://dtable-server-dev.seatable.cn"
 DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"
 
-
 if ENABLE_CLUSTER:
     dtable_server_url = DTABLE_SERVER_API_URL
 else:
     dtable_server_url = DTABLE_SERVER_URL
+
 
 base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
 base.auth()
@@ -70,7 +70,7 @@ TABLE_NAME_ID_MAP = {
     'NumberFomulaDotSplitByDot': '2x7k'
 }
 
-def format_filters(filter_items):
+def format_filters(filter_items, filter_conjunction='And'):
     return {
 
         "filter_groups": [
@@ -78,6 +78,8 @@ def format_filters(filter_items):
                 "filters": [
                     filter_item for filter_item in filter_items
                 ],
+
+                "filter_conjunction": filter_conjunction
             },
         ],
 
@@ -86,8 +88,9 @@ def format_filters(filter_items):
 VIEW_NAME_EXCLUDE = ['默认视图', '归档']
 
 
+
 # db-API returns
-def filter_rows(filter_items, table_id):
+def filter_rows(filter_items, table_id, conjunction='And'):
     api_url = "%s/api/v1/internal/dtables/%s/filter-rows/" % (
         dtable_server_url.rstrip("/"),
         base.dtable_uuid,
@@ -95,8 +98,9 @@ def filter_rows(filter_items, table_id):
 
     params = {
         "table_id": table_id,
-        "filter_conditions": format_filters(filter_items)
+        "filter_conditions": format_filters(filter_items, conjunction)
     }
+
 
     res = requests.post(api_url, json=params, headers=base.headers)
     filtered_rows = res.json().get('rows')
@@ -118,11 +122,12 @@ def run(base, local_test=True, result_table='TestResult'):
             if view_name in VIEW_NAME_EXCLUDE:
                 continue
             filter_items = view.get('filters')
+            filter_conjunction = view.get('filter_conjunction', 'And')
             if not filter_items:
                 continue
             for filter_item in filter_items:
                 filter_item['view_name'] = view_name
-            filter_rows_db = filter_rows(filter_items, table_id)
+            filter_rows_db = filter_rows(filter_items, table_id, filter_conjunction)
             filter_rows_page = base.list_rows(table_name, view_name)
 
             if len(filter_rows_db) != len(filter_rows_page):
