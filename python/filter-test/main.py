@@ -2,6 +2,7 @@ from seatable_api import Base
 import requests
 import json
 import time
+from sql_generator import filter2sql
 ENABLE_CLUSTER = True
 API_TOKEN = "1c3db106dd06b7eac9775f89d6601e1667750a5c"
 DTABLE_WEB_SERVER_URL = "https://dev.seatable.cn"
@@ -90,21 +91,11 @@ VIEW_NAME_EXCLUDE = ['默认视图', '归档']
 
 
 # db-API returns
-def filter_rows(filter_items, table_id, conjunction='And'):
-    api_url = "%s/api/v1/internal/dtables/%s/filter-rows/" % (
-        dtable_server_url.rstrip("/"),
-        base.dtable_uuid,
-    )
-
-    params = {
-        "table_id": table_id,
-        "filter_conditions": format_filters(filter_items, conjunction)
-    }
-
-
-    res = requests.post(api_url, json=params, headers=base.headers)
-    filtered_rows = res.json().get('rows')
-    return filtered_rows
+def filter_rows(filter_items, table_name, columns, conjunction='And'):
+    filter_conditions = format_filters(filter_items, conjunction)
+    sql = filter2sql(table_name, columns, filter_conditions, by_group=True)
+    res = base.query(sql)
+    return res, sql
 
 
 def run(base, local_test=True, result_table='TestResult'):
@@ -116,6 +107,7 @@ def run(base, local_test=True, result_table='TestResult'):
         if table_name not in TABLE_NAME_ID_MAP.keys():
             continue
         views = table.get('views')
+        columns = table['columns']
         pass_num, fail_num, unmatch_filters, col_type = 0, 0, [], table_name
         for view in views:
             view_name = view.get('name')
@@ -127,7 +119,7 @@ def run(base, local_test=True, result_table='TestResult'):
                 continue
             for filter_item in filter_items:
                 filter_item['view_name'] = view_name
-            filter_rows_db = filter_rows(filter_items, table_id, filter_conjunction)
+            filter_rows_db, sql = filter_rows(filter_items, table_name, columns, filter_conjunction)
             filter_rows_page = base.list_rows(table_name, view_name)
 
             if len(filter_rows_db) != len(filter_rows_page):
