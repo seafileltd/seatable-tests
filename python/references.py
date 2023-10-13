@@ -66,8 +66,8 @@ REFERENCES = [
         'type': 'GroupBy',
         'sql': "Select 单选, avg(数字) from Table1 group by 单选",
         'expected_result': [
-            {'单选': '男', 'avg(数字)': 30},
-            {'单选': '女', 'avg(数字)': 25}
+            {'单选': '男', 'AVG(数字)': 30},
+            {'单选': '女', 'AVG(数字)': 25}
         ]
     },
     {
@@ -184,10 +184,10 @@ REFERENCES = [
         'type': 'Common',
         'sql': "select _id, 文本, URL, exact(`文本`,'AA'), find('goo',`URL`, 1), left(`URL`,5), len(`URL`), lower(`文本`), mid(`邮箱`, 1, 8), replace(`邮箱`, 1, 8, '12345678'), rept(`文本`, 2), right(`URL`, 5), search('www',`URL`,1), substitute(`邮箱`, '@', '^^',1) from Table1",
         'expected_result':[
-            {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 21, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': '35017898', "REPLACE(`邮箱`, 1, 8, '12345678')": '123456782@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'u.com', "SEARCH('www',`URL`,1)": 9, "SUBSTITUTE(`邮箱`, '@', '^^',1)": '350178982^^qq.com', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', 'URL': 'https://www.baidu.com'},
-            {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": 9, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 18, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': 'r3501789', "REPLACE(`邮箱`, 1, 8, '12345678')": '1234567882@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'e.com', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'r350178982^^qq.com', '_id': 'COASY7zyRaOUZAWKyFEyzQ', 'URL': 'https://google.com'},
-            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 23, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'rjw@gmai', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678l.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.cn', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'rjw^^gmail.com', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', 'URL': 'https://dev.seatable.cn'},
-            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": 0, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 25, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'ran.jiwe', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678i@seafile.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.io', "SEARCH('www',`URL`,1)": 0, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'ran.jiwei^^seafile.com', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io'}
+            {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": None, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 21, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': '35017898', "REPLACE(`邮箱`, 1, 8, '12345678')": '123456782@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'u.com', "SEARCH('www',`URL`,1)": 9, "SUBSTITUTE(`邮箱`, '@', '^^',1)": '350178982^^qq.com', '_id': 'G9c0P_fmQ8WG-lL5RG8bng', 'URL': 'https://www.baidu.com'},
+            {'文本': 'AA', "EXACT(`文本`,'AA')": True, "FIND('goo',`URL`, 1)": 9, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 18, 'LOWER(`文本`)': 'aa', 'MID(`邮箱`, 1, 8)': 'r3501789', "REPLACE(`邮箱`, 1, 8, '12345678')": '1234567882@qq.com', 'REPT(`文本`, 2)': 'AAAA', 'RIGHT(`URL`, 5)': 'e.com', "SEARCH('www',`URL`,1)": None, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'r350178982^^qq.com', '_id': 'COASY7zyRaOUZAWKyFEyzQ', 'URL': 'https://google.com'},
+            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": None, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 23, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'rjw@gmai', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678l.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.cn', "SEARCH('www',`URL`,1)": None, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'rjw^^gmail.com', '_id': 'LWTLEcPRRj2eBtEDD7xbOQ', 'URL': 'https://dev.seatable.cn'},
+            {'文本': 'BB', "EXACT(`文本`,'AA')": False, "FIND('goo',`URL`, 1)": None, 'LEFT(`URL`,5)': 'https', 'LEN(`URL`)': 25, 'LOWER(`文本`)': 'bb', 'MID(`邮箱`, 1, 8)': 'ran.jiwe', "REPLACE(`邮箱`, 1, 8, '12345678')": '12345678i@seafile.com', 'REPT(`文本`, 2)': 'BBBB', 'RIGHT(`URL`, 5)': 'le.io', "SEARCH('www',`URL`,1)": None, "SUBSTITUTE(`邮箱`, '@', '^^',1)": 'ran.jiwei^^seafile.com', '_id': 'RKMQdKjQTamnaP23JrOZ1w', 'URL': 'https://cloud.seatable.io'}
         ]
     },
     {
