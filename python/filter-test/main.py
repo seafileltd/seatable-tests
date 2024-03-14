@@ -1,4 +1,4 @@
-from seatable_api import Base
+from seatable_api import Base, SeaTableAPI
 import requests
 import json
 import time
@@ -15,8 +15,50 @@ else:
     dtable_server_url = DTABLE_SERVER_URL
 
 
-base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
-base.auth()
+def parse_response(response):
+    if response.status_code >= 400:
+        try:
+            err_data = json.loads(response.text)
+        except:
+            raise ConnectionError(response.status_code, response.text)
+    else:
+        try:
+            data = json.loads(response.text)
+            return data
+        except:
+            pass
+
+
+class MyBase(Base):
+
+    def __init__(self, token, server_url):
+        super(MyBase, self).__init__(token, server_url)
+
+    def list_dtable_server_rows(self, table_name, view_name=None):
+        """
+        :param table_name: str
+        :param view_name: str
+        :param order_by: str
+        :param desc: boolean
+        :param start: int
+        :param limit: int
+        :return: list
+        """
+        url = self.dtable_server_url + '/api/v1/internal/dtables/' + self.dtable_uuid + '/rows/'
+        params = {
+            'table_name': table_name
+        }
+
+
+        if view_name:
+            params['view_name'] = view_name
+
+        response = requests.get(url, params=params, headers=self.headers, timeout=self.timeout)
+        data = parse_response(response)
+        return data.get('rows')
+
+
+
 EXCLUDE_TABLE_NAME_ID_MAP = {
     'TestResult': 'MCkc',
     'TestResultNumber': 'C603',
@@ -101,7 +143,6 @@ def filter_rows(filter_items, table_name, columns, conjunction='And'):
 def run(base, local_test=True, result_table='TestResult'):
     for table in base.get_metadata().get('tables'):
         table_name = table.get('name')
-        table_id = table.get('_id')
         if table_name in EXCLUDE_TABLE_NAME_ID_MAP.keys():
             continue
         if table_name not in TABLE_NAME_ID_MAP.keys():
@@ -119,8 +160,14 @@ def run(base, local_test=True, result_table='TestResult'):
                 continue
             for filter_item in filter_items:
                 filter_item['view_name'] = view_name
+
             filter_rows_db, sql = filter_rows(filter_items, table_name, columns, filter_conjunction)
-            filter_rows_page = base.list_rows(table_name, view_name)
+
+            if result_table == 'TestResult':
+                filter_rows_page = base.list_rows(table_name, view_name)
+            else:
+                filter_rows_page = base.list_dtable_server_rows(table_name, view_name)
+            # print(filter_rows_page, 'ssssssss')
 
             if len(filter_rows_db) != len(filter_rows_page):
                 fail_num += 1
@@ -154,7 +201,8 @@ def run(base, local_test=True, result_table='TestResult'):
 
 
 if __name__ == '__main__':
-    base = Base(API_TOKEN, DTABLE_WEB_SERVER_URL)
+    base = MyBase(API_TOKEN, DTABLE_WEB_SERVER_URL)
     base.auth()
     LOCAL_TEST = False
-    run(base, LOCAL_TEST)
+    run(base, LOCAL_TEST, result_table='TestResult')
+    run(base, LOCAL_TEST, result_table='TestResult-2')
