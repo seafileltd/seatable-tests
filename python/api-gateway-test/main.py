@@ -1,5 +1,6 @@
 from seatable_api import Base
 import requests
+import time
 SERVER_URL = "https://dev.seatable.cn"
 API_TOKEN = "1e1ef4db90af4fa73025e8b6f1541f15e1fa0216"
 
@@ -36,7 +37,7 @@ class APIGatewayMetaTest(APIGatewayTest):
     def __init__(self, base):
         super(APIGatewayMetaTest, self).__init__(base)
 
-        self.tmp_row = None
+        self.tmp_rows = []
 
     def format_infos(self, test_name, success, other_infos=None):
         return {
@@ -56,7 +57,7 @@ class APIGatewayMetaTest(APIGatewayTest):
         success, detail = False, ''
         if resp.status_code == 200:
             success = True
-            self.tmp_row = resp.json().get('rows')[0]
+            self.tmp_rows = resp.json().get('rows')
         else:
             success = False
             detail = resp.content
@@ -89,11 +90,62 @@ class APIGatewayMetaTest(APIGatewayTest):
         )
 
 
+    def add_rows_to_bgs(self):
+        # insert rows in bigdata storage
+        api_url = self.format_url('/api/v2/dtables/%s/insert-archived-rows/' % self.dtable_uuid)
+        data = {
+            'table_name': TABLE_NAME,
+            'rows': [
+                {'名称': 'AA-bigdata'}
+            ]
+        }
+        resp = requests.post(api_url, json=data, headers=self.headers)
+
+        success, detail = False, ''
+        if resp.status_code == 200:
+            success = True
+        else:
+            success = False
+            detail = resp.content
+        return self.format_infos(
+            'insert-rows-into-bgs',
+            success,
+            detail
+        )
+
+    def update_rows(self):
+        api_url = self.format_url('/api/v2/dtables/%s/rows/' % self.dtable_uuid)
+        data = {
+            'table_name': TABLE_NAME,
+            'updates':[
+                {
+                    "row_id": self.tmp_rows[0]['_id'],
+                    "row":{'名称': 'AA-update-rows'}
+                }
+            ]
+        }
+        resp = requests.put(api_url, json=data, headers=self.headers)
+
+        success, detail = False, ''
+        if resp.status_code == 200:
+            success = True
+        else:
+            success = False
+            detail = resp.content
+        return self.format_infos(
+            'update-rows',
+            success,
+            detail
+        )
+
+
     def run_workflow(self):
-        # 定义一个工作流程
+        # 定义一个测试流程， 如对行的curd
         workflows = [
             self.list_rows,
-            self.add_rows
+            self.add_rows,
+            self.add_rows_to_bgs,
+            self.update_rows
         ]
 
         for func in workflows:
@@ -113,6 +165,8 @@ class APIGatewayProxyTest(APIGatewayTest):
     def __init__(self, base):
         super(APIGatewayProxyTest, self).__init__(base)
 
+        self.tmp_columns = []
+
     def format_infos(self, test_name, success, other_infos=None):
         return {
             "测试功能": test_name,
@@ -129,6 +183,7 @@ class APIGatewayProxyTest(APIGatewayTest):
         resp = requests.get(api_url, params=params, headers=self.headers)
         success, detail = False, ''
         if resp.status_code == 200:
+            self.tmp_columns = resp.json().get('columns')
             success = True
         else:
             success = False
@@ -139,11 +194,32 @@ class APIGatewayProxyTest(APIGatewayTest):
             detail
         )
 
+    def insert_column(self):
+        api_url = self.format_url('/api/v2/dtables/%s/columns/' % self.dtable_uuid)
+
+        data = {
+            'table_name': TABLE_NAME,
+            'column_name': 'Col_New_%s' % str(int(time.time()))[4:]
+        }
+        resp = requests.post(api_url, json=data, headers=self.headers)
+        success, detail = False, ''
+        if resp.status_code == 200:
+            success = True
+        else:
+            success = False
+            detail = resp.content
+        return self.format_infos(
+            'insert-columns',
+            success,
+            detail
+        )
+
 
     def run_workflow(self):
         # 定义一个测试流程
         workflows = [
-            self.list_columns
+            self.list_columns,
+            self.insert_column,
         ]
 
         for func in workflows:
