@@ -30,7 +30,7 @@ class APIGatewayTest(object):
 
 class APIGatewayMetaTest(APIGatewayTest):
 
-    # 测试 api-gateway dtable-db中的原生功能
+    #  api-gateway functions designed by dtable-db
 
     TEST_TYPE = 'api-gateway-db'
 
@@ -41,10 +41,10 @@ class APIGatewayMetaTest(APIGatewayTest):
 
     def format_infos(self, test_name, success, other_infos=None):
         return {
-            "测试功能": test_name,
-            "API类型": self.TEST_TYPE,
+            "Functions": test_name,
+            "API-Type": self.TEST_TYPE,
             "Success": "Yes" if success else "No",
-            "详情": "%s" % other_infos
+            "Details": "%s" % other_infos
         }
 
     def list_rows(self):
@@ -72,7 +72,7 @@ class APIGatewayMetaTest(APIGatewayTest):
         data = {
             'table_name': TABLE_NAME,
             'rows': [
-                {'名称': 'AA'}
+                {'Name': 'AA-%s' % str(int(time.time()))}
             ]
         }
         resp = requests.post(api_url, json=data, headers=self.headers)
@@ -96,7 +96,7 @@ class APIGatewayMetaTest(APIGatewayTest):
         data = {
             'table_name': TABLE_NAME,
             'rows': [
-                {'名称': 'AA-bigdata'}
+                {'Name': 'AA-bigdata-%s' % str(int(time.time()))}
             ]
         }
         resp = requests.post(api_url, json=data, headers=self.headers)
@@ -120,7 +120,7 @@ class APIGatewayMetaTest(APIGatewayTest):
             'updates':[
                 {
                     "row_id": self.tmp_rows[0]['_id'],
-                    "row":{'名称': 'AA-update-rows'}
+                    "row":{'Name': 'AA-update-rows-%s' % str(int(time.time()))}
                 }
             ]
         }
@@ -140,7 +140,7 @@ class APIGatewayMetaTest(APIGatewayTest):
 
 
     def run_workflow(self):
-        # 定义一个测试流程， 如对行的curd
+        # Test workflows for running the test functions
         workflows = [
             self.list_rows,
             self.add_rows,
@@ -157,7 +157,7 @@ class APIGatewayMetaTest(APIGatewayTest):
 
 class APIGatewayProxyTest(APIGatewayTest):
 
-    # 测试 api-gateway 转发 dtable-server 的功能
+    # api-gateway functions as proxy of dtable-server
 
     TEST_TYPE = 'dtable-server-proxy'
 
@@ -169,10 +169,10 @@ class APIGatewayProxyTest(APIGatewayTest):
 
     def format_infos(self, test_name, success, other_infos=None):
         return {
-            "测试功能": test_name,
-            "API类型": self.TEST_TYPE,
+            "Functions": test_name,
+            "API-Type": self.TEST_TYPE,
             "Success": "Yes" if success else "No",
-            "详情": "%s" % other_infos
+            "Details": "%s" % other_infos
         }
 
     def list_columns(self):
@@ -216,7 +216,7 @@ class APIGatewayProxyTest(APIGatewayTest):
 
 
     def run_workflow(self):
-        # 定义一个测试流程
+        # Test workflows for running the test functions
         workflows = [
             self.list_columns,
             self.insert_column,
