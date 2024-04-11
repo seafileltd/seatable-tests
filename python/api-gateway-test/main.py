@@ -474,6 +474,14 @@ class APIGatewayMetaTest_PythonSDK:
         class LinkOperations(APIGatewayTest):
             def __init__(self, base: Base):
                 self.base = base
+                self.__pre_link_test()
+                self.get_column_link_id()
+                self.add_link()
+                self.update_link()
+                self.batch_update_links()
+                self.remove_link()
+
+            def __pre_link_test(self):
                 if "CanAddColumn" in Hash and \
                    "CanBatchAppendRows" in Hash and \
                    "CanListRows" in Hash:
@@ -490,13 +498,6 @@ class APIGatewayMetaTest_PythonSDK:
                     Hash["LinkTable_RowIds"] = [row["_id"] for row in self.base.list_rows(LINK_TABLE_NAME)]
 
                     Hash["CanDoLinkTest"] = True
-
-                self.get_column_link_id()
-                self.add_link()
-                self.update_link()
-                self.batch_update_links()
-                self.remove_link()
-
 
             @engageTest("CanDoLinkTest")
             def get_column_link_id(self):
