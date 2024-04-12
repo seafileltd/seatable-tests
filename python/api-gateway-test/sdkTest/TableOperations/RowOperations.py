@@ -80,9 +80,11 @@ class RowOperations(APIGatewayTest):
             for i in range(99):
                 self.base.batch_append_rows(TABLE_NAME, [{"Name": f"ExtremeTest{j}_batch{i}"} for j in range(1000)])
 
-            while len(rows := self.base.list_rows(TABLE_NAME)) > 0:
+            rows = self.base.list_rows(TABLE_NAME)
+            while len(rows) > 0:
                 self.base.batch_delete_rows(TABLE_NAME, [row["_id"] for row in rows])
-
+                rows = self.base.list_rows(TABLE_NAME)
+                
         except Exception as e:
             print(repr(e))
     
