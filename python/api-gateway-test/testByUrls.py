@@ -1,32 +1,8 @@
+from config import TABLE_NAME, TEST_RESULTS_TABLE_NAME, API_TOKEN, SERVER_URL
+from APIGatewayTest import APIGatewayTest
 from seatable_api import Base
 import requests
 import time
-SERVER_URL = "https://dev.seatable.cn"
-API_TOKEN = "1e1ef4db90af4fa73025e8b6f1541f15e1fa0216"
-
-TEST_RESULTS_TABLE_NAME = "TestResults"
-TABLE_NAME = 'Table'
-LINK_TABLE_NAME = 'LinkTable'
-
-class APIGatewayTest(object):
-
-    TEST_TYPE = None
-
-
-
-    def __init__(self, base):
-
-        self.base = base
-        self.dtable_uuid = base.dtable_uuid
-        self.headers = base.headers
-
-
-
-    def format_url(self, api_url):
-
-        gateway_url = "%s/api-gateway" % SERVER_URL
-        return "%s/%s" % (gateway_url, api_url.lstrip('/'))
-
 
 class APIGatewayMetaTest(APIGatewayTest):
 
@@ -39,13 +15,6 @@ class APIGatewayMetaTest(APIGatewayTest):
 
         self.tmp_rows = []
 
-    def format_infos(self, test_name, success, other_infos=None):
-        return {
-            "Functions": test_name,
-            "API-Type": self.TEST_TYPE,
-            "Success": "Yes" if success else "No",
-            "Details": "%s" % other_infos
-        }
 
     def list_rows(self):
         api_url = self.format_url('/api/v2/dtables/%s/rows' % self.dtable_uuid)
@@ -53,7 +22,7 @@ class APIGatewayMetaTest(APIGatewayTest):
             'table_name': TABLE_NAME
         }
         resp = requests.get(api_url, params=params, headers=self.headers)
-
+        
         success, detail = False, ''
         if resp.status_code == 200:
             success = True
@@ -88,7 +57,6 @@ class APIGatewayMetaTest(APIGatewayTest):
             success,
             detail
         )
-
 
     def add_rows_to_bgs(self):
         # insert rows in bigdata storage
@@ -138,7 +106,7 @@ class APIGatewayMetaTest(APIGatewayTest):
             detail
         )
 
-
+    
     def run_workflow(self):
         # Test workflows for running the test functions
         workflows = [
@@ -152,29 +120,17 @@ class APIGatewayMetaTest(APIGatewayTest):
             row_data = func()
             self.base.append_row(TEST_RESULTS_TABLE_NAME, row_data)
 
-
-
-
 class APIGatewayProxyTest(APIGatewayTest):
 
     # api-gateway functions as proxy of dtable-server
 
     TEST_TYPE = 'dtable-server-proxy'
 
-
     def __init__(self, base):
         super(APIGatewayProxyTest, self).__init__(base)
 
         self.tmp_columns = []
-
-    def format_infos(self, test_name, success, other_infos=None):
-        return {
-            "Functions": test_name,
-            "API-Type": self.TEST_TYPE,
-            "Success": "Yes" if success else "No",
-            "Details": "%s" % other_infos
-        }
-
+    
     def list_columns(self):
         api_url = self.format_url('/api/v2/dtables/%s/columns' % self.dtable_uuid)
         params = {
@@ -213,10 +169,10 @@ class APIGatewayProxyTest(APIGatewayTest):
             success,
             detail
         )
-
-
+    
     def run_workflow(self):
         # Test workflows for running the test functions
+        
         workflows = [
             self.list_columns,
             self.insert_column,
@@ -227,9 +183,7 @@ class APIGatewayProxyTest(APIGatewayTest):
             self.base.append_row(TEST_RESULTS_TABLE_NAME, row_data)
 
 
-
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     base = Base(API_TOKEN, SERVER_URL)
     base.auth()
 
@@ -238,4 +192,3 @@ if __name__ == '__main__':
 
     test_db.run_workflow()
     test_proxy.run_workflow()
-
