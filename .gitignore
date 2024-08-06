@@ -2,3 +2,4 @@
 *.iml
 /.idea
 *.pyc
+local_constants.py
