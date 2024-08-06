@@ -660,9 +660,9 @@ class DTableServerTest(object):
         except Exception as err:
             return False, self._format_error_msg(url, name, err)
 
-        if not (row['_creator'] == row['_last_modifier'] == api_name):
+        if not (row.get('_creator') == row.get('_last_modifier') == api_name):
             return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
-                row['_creator'], row['_last_modifier'], api_name
+                row.get('_creator'), row.get('_last_modifier'), api_name
             ))
 
         return True, None
@@ -709,9 +709,9 @@ class DTableServerTest(object):
         except Exception as err:
             return False, self._format_error_msg(url, name, err)
 
-        if not (row['_creator'] == origin_api_name and row['_last_modifier'] == api_name):
+        if not (row.get('_creator') == origin_api_name and row.get('_last_modifier') == api_name):
             return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
-                row['_creator'], row['_last_modifier'], api_name
+                row.get('_creator'), row.get('_last_modifier'), api_name
             ))
 
         return True, None
@@ -742,9 +742,9 @@ class DTableServerTest(object):
         except Exception as err:
             return False, self._format_error_msg(url, name, err)
 
-        if not (row['_creator'] == row['_last_modifier'] == api_name):
+        if not (row.get('_creator') == row.get('_last_modifier') == api_name):
             return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
-                row['_creator'], row['_last_modifier'], api_name
+                row.get('_creator'), row.get('_last_modifier'), api_name
             ))
 
         return True, None
@@ -795,9 +795,9 @@ class DTableServerTest(object):
         except Exception as err:
             return False, self._format_error_msg(url, name, err)
 
-        if not (row['_creator'] == origin_api_name and row['_last_modifier'] == api_name):
+        if not (row.get('_creator') == origin_api_name and row.get('_last_modifier') == api_name):
             return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
-                row['_creator'], row['_last_modifier'], api_name
+                row.get('_creator'), row.get('_last_modifier'), api_name
             ))
 
         return True, None
@@ -848,9 +848,9 @@ class DTableServerTest(object):
         except Exception as err:
             return False, self._format_error_msg(url, name, err)
 
-        if not (row['_creator'] == row['_last_modifier'] == api_name):
+        if not (row.get('_creator') == row.get('_last_modifier') == api_name):
             return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
-                row['_creator'], row['_last_modifier'], api_name
+                row.get('_creator'), row.get('_last_modifier'), api_name
             ))
 
         return True, None
@@ -901,9 +901,9 @@ class DTableServerTest(object):
         except Exception as err:
             return False, self._format_error_msg(url, name, err)
 
-        if not (row['_creator'] == origin_api_name and row['_last_modifier'] == api_name):
+        if not (row.get('_creator') == origin_api_name and row.get('_last_modifier') == api_name):
             return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
-                row['_creator'], row['_last_modifier'], api_name
+                row.get('_creator'), row.get('_last_modifier'), api_name
             ))
 
         return True, None
