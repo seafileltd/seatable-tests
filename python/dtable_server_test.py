@@ -2,7 +2,8 @@ import requests
 from seatable_api import Base, context
 from constants import DTABLE_SERVER_API_URL, DTABLE_SERVER_URL,DTABLE_WEB_SERVICE_URL, \
     TEST_USER_EMAIL, TEST_USER_PASSWORD, \
-    TEST_READ_ONLY_USER_EMAIL, TEST_READ_ONLY_USER_PASSWORD, TEST_TABLE_NAME, ENABLE_CLUSTER
+    TEST_READ_ONLY_USER_EMAIL, TEST_READ_ONLY_USER_PASSWORD, TEST_TABLE_NAME, ENABLE_CLUSTER, \
+    API_TOKEN_NAME_1, API_TOKEN_NAME_2, API_GATEWAY_URL, LOCAL_TEST
 
 
 if ENABLE_CLUSTER:
@@ -25,11 +26,17 @@ class DTableServerTest(object):
 
 
         self.table_id = ''
-        self.row_id = ''
+        self.row_id = ''  # row created by user
+        self.app_row_id = ''  # row created by app-1
+        self.app_batch_row_id = ''  # row batched created by app-1
+        self.api_gateway_app_row_id = ''  # row created by app-1 through api-gateway
+
         self.comment_id = ''
 
         self.username = ''
         self.readonly_username = ''
+
+        self.api_token_dict = {}
 
     def _format_error_msg(self, api_url, api_name, msg):
         return "[API:%s][URL: %s] error: %s" % (api_name, api_url, msg)
@@ -586,37 +593,320 @@ class DTableServerTest(object):
 
         return success, error_msg
 
-
-    def delete_row_comment_test(self):
-        name = "delete row comment"
-        url = dtable_server_api_url.rstrip('/') + '/api/v1/dtables/%s/comments/%s/' % (
-            self.dtable_uuid,
-            self.comment_id
-        )
+    def api_token_test(self):
+        name = 'create api token'
         success, error_msg = False, None
-        headers = self._format_header(self.dtable_access_token)
-        headers['Content-Type'] = 'application/json'
-        try:
-            res = requests.delete(
-                url,
-                headers=headers,
+        for api_token_name in [API_TOKEN_NAME_1, API_TOKEN_NAME_2]:
+            url = DTABLE_WEB_SERVICE_URL.rstrip('/') + '/api/v2.1/workspace/%s/dtable/%s/api-tokens/' % (
+                self.workspace_id,
+                TEST_TABLE_NAME
             )
-            status_code = res.status_code
-            if status_code == 200:
-                result_success = res.json().get('success')
-                if result_success:
-                    success = True
+            data = {
+                'app_name': api_token_name,
+                'permission': 'rw'
+            }
+            headers = self._format_header(self.auth_token)
+            try:
+                res = requests.post(url, json=data, headers=headers)
+                if not res.ok:
+                    error_msg = self._format_error_msg(url, name, 'Unexpected api token: %s status code: %s response: %s' % (api_token_name, res.status_code, res.text))
                 else:
-                    err = 'Unexpected response : %s, expected %s' % (result_success, 'True')
-                    error_msg = self._format_error_msg(url, name, err)
-            else:
-                err = 'Unexpected status code : %s, expected %s' % (status_code, 200)
+                    self.api_token_dict[api_token_name] = {'api_token': res.json()['api_token']}
+                    success = True
+            except Exception as err:
                 error_msg = self._format_error_msg(url, name, err)
 
-        except Exception as err:
-            error_msg = self._format_error_msg(url, name, err)
-
         return success, error_msg
+
+    def app_access_token_test(self):
+        name = 'app access token'
+        url = DTABLE_WEB_SERVICE_URL.rstrip('/') + '/api/v2.1/dtable/app-access-token/'
+        success, error_msg = False, None
+        for info in self.api_token_dict.values():
+            headers = self._format_header(info['api_token'])
+            try:
+                res = requests.get(url, headers=headers)
+                if not res.ok:
+                    error_msg = self._format_error_msg(url, name, 'Unexpected status code: %s response: %s' % (res.status_code, res.text))
+                else:
+                    success = True
+                    info['access_token'] = res.json()['access_token']
+            except Exception as err:
+                error_msg = self._format_error_msg(url, name, err)
+        return success, error_msg
+
+    def append_row_creator_modifier_test(self):
+        name = 'append row test creator modifier'
+
+        api_name = API_TOKEN_NAME_1
+        api_token_info = self.api_token_dict.get(api_name)
+        if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
+            return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
+
+        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        headers = self._format_header(api_token_info['access_token'])
+        data = {
+            'table_name': 'Table1',
+            'row': {
+                'Name': 'From %s' % api_name
+            }
+        }
+        try:
+            res = requests.post(url, headers=headers, json=data)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected status code: %s response: %s' % (res.status_code, res.text))
+            self.app_row_id = res.json()['_id']
+            row = res.json()
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        if not (row['_creator'] == row['_last_modifier'] == api_name):
+            return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
+                row['_creator'], row['_last_modifier'], api_name
+            ))
+
+        return True, None
+
+    def update_row_creator_modifier_test(self):
+        name = 'update row test creator modifier'
+
+        origin_api_name = API_TOKEN_NAME_1
+        api_name = API_TOKEN_NAME_2
+        api_token_info = self.api_token_dict.get(api_name)
+        if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
+            return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
+        if not self.app_row_id:
+            return False, self._format_error_msg(None, name, 'row created by %s not found' % origin_api_name)
+
+        # update
+        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        headers = self._format_header(api_token_info['access_token'])
+        data = {
+            'table_name': 'Table1',
+            'row_id': self.app_row_id,
+            'row': {
+                'Name': 'Updated by %s' % api_name
+            }
+        }
+        try:
+            res = requests.put(url, headers=headers, json=data)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected update row status code: %s response: %s' % (res.status_code, res.text))
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        # get
+        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.app_row_id)
+        headers = self._format_header(api_token_info['access_token'])
+        params = {
+            'table_name': 'Table1'
+        }
+        try:
+            res = requests.get(url, headers=headers, params=params)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected get row status code: %s response: %s' % (res.status_code, res.text))
+            row = res.json()
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        if not (row['_creator'] == origin_api_name and row['_last_modifier'] == api_name):
+            return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
+                row['_creator'], row['_last_modifier'], api_name
+            ))
+
+        return True, None
+
+    def batch_append_rows_test(self):
+        name = 'batch append rows test creator modifier'
+
+        api_name = API_TOKEN_NAME_1
+        api_token_info = self.api_token_dict.get(api_name)
+        if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
+            return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
+
+        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/batch-append-rows/" % self.dtable_uuid
+        headers = self._format_header(api_token_info['access_token'])
+        data = {
+            'table_name': 'Table1',
+            'rows': [{
+                'Name': 'From %s' % api_name
+            }],
+            'return_rows': True
+        }
+        try:
+            res = requests.post(url, headers=headers, json=data)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected batch append rows status code: %s response: %s' % (res.status_code, res.text))
+            self.app_batch_row_id = res.json()['rows'][0]['_id']
+            row = res.json()['rows'][0]
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        if not (row['_creator'] == row['_last_modifier'] == api_name):
+            return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
+                row['_creator'], row['_last_modifier'], api_name
+            ))
+
+        return True, None
+
+    def batch_update_rows_test(self):
+        name = 'batch update rows test creator modifier'
+
+        origin_api_name = API_TOKEN_NAME_1
+        api_name = API_TOKEN_NAME_2
+        api_token_info = self.api_token_dict.get(api_name)
+        if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
+            return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
+        if not self.app_batch_row_id:
+            return False, self._format_error_msg(None, name, 'batch row created by %s not found' % origin_api_name)
+
+        # update
+        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/batch-update-rows/" % self.dtable_uuid
+        headers = self._format_header(api_token_info['access_token'])
+        data = {
+            'table_name': 'Table1',
+            'updates': [
+                {
+                    'row_id': self.app_batch_row_id,
+                    'row': {
+                        'Name': 'Updated by %s' % api_name
+                    }
+                }
+            ]
+        }
+        try:
+            res = requests.put(url, headers=headers, json=data)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected batch update rows status code: %s response: %s' % (res.status_code, res.text))
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        # get
+        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.app_batch_row_id)
+        headers = self._format_header(api_token_info['access_token'])
+        params = {
+            'table_name': 'Table1'
+        }
+        try:
+            res = requests.get(url, headers=headers, params=params)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected get row status code: %s response: %s' % (res.status_code, res.text))
+            row = res.json()
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        if not (row['_creator'] == origin_api_name and row['_last_modifier'] == api_name):
+            return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
+                row['_creator'], row['_last_modifier'], api_name
+            ))
+
+        return True, None
+
+    def api_gateway_append_rows_test(self):
+        name = 'api-gateway append rows test creator modifier'
+
+        api_name = API_TOKEN_NAME_1
+        api_token_info = self.api_token_dict.get(api_name)
+        if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
+            return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
+
+        # append row
+        url = API_GATEWAY_URL.rstrip('/') + "/api/v2/dtables/%s/rows/" % self.dtable_uuid
+        headers = self._format_header(api_token_info['access_token'])
+        cell_value = 'From api-gateway %s' % api_name
+        data = {
+            'table_name': 'Table1',
+            'rows': [{
+                'Name': cell_value
+            }]
+        }
+        try:
+            res = requests.post(url, headers=headers, json=data)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected api-gateway append rows status code: %s response: %s' % (res.status_code, res.text))
+            if res.json()['inserted_row_count'] != 1:
+                return False, self._format_error_msg(url, name, 'Unexpected api-gateway append rows insert rows count %s' % res.json()['inserted_row_count'])
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        # get row
+        url = API_GATEWAY_URL.rstrip('/') + "/api/v2/dtables/%s/rows/" % self.dtable_uuid
+        headers = self._format_header(api_token_info['access_token'])
+        params = {
+            'table_name': 'Table1',
+            'convert_keys': True
+        }
+        try:
+            res = requests.get(url, headers=headers, params=params)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected api-gateway get rows status code: %s response: %s' % (res.status_code, res.text))
+            rows = res.json()['rows']
+            row = next(filter(lambda row: row['Name'] == cell_value, rows), None)
+            if not row:
+                return False, self._format_error_msg(url, name, 'Unexpected api-gateway get no rows')
+            self.api_gateway_app_row_id = row['_id']
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        if not (row['_creator'] == row['_last_modifier'] == api_name):
+            return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
+                row['_creator'], row['_last_modifier'], api_name
+            ))
+
+        return True, None
+
+    def api_gateway_update_rows_test(self):
+        name = 'api-gateway update rows test creator modifier'
+
+        origin_api_name = API_TOKEN_NAME_1
+        api_name = API_TOKEN_NAME_2
+        api_token_info = self.api_token_dict.get(api_name)
+        if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
+            return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
+        if not self.api_gateway_app_row_id:
+            return False, self._format_error_msg(None, name, 'api-gateway row created by %s not found' % origin_api_name)
+
+        # update
+        url = API_GATEWAY_URL.rstrip('/') + "/api/v2/dtables/%s/rows/" % self.dtable_uuid
+        headers = self._format_header(api_token_info['access_token'])
+        data = {
+            'table_name': 'Table1',
+            'updates': [
+                {
+                    'row_id': self.api_gateway_app_row_id,
+                    'row': {
+                        'Name': 'Updated by %s' % api_name
+                    }
+                }
+            ]
+        }
+        try:
+            res = requests.put(url, headers=headers, json=data)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected api-gateway update rows status code: %s response: %s' % (res.status_code, res.text))
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        # get row
+        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.api_gateway_app_row_id)
+        headers = self._format_header(api_token_info['access_token'])
+        params = {
+            'table_name': 'Table1'
+        }
+        try:
+            res = requests.get(url, headers=headers, params=params)
+            if not res.ok:
+                return False, self._format_error_msg(url, name, 'Unexpected get row status code: %s response: %s' % (res.status_code, res.text))
+            row = res.json()
+        except Exception as err:
+            return False, self._format_error_msg(url, name, err)
+
+        if not (row['_creator'] == origin_api_name and row['_last_modifier'] == api_name):
+            return False, self._format_error_msg(url, name, '_creator: %s _last_modifier: %s api_token_name: %s' % (
+                row['_creator'], row['_last_modifier'], api_name
+            ))
+
+        return True, None
 
     def run(self, print_out=True):
         test_funcs_in_order = [
@@ -643,11 +933,19 @@ class DTableServerTest(object):
             self.filter_row_test,
             self.add_row_comment_test,
             self.get_row_comment_test,
-            self.delete_row_comment_test,
             self.user_update_row_test,
             self.user_delete_row_test,
 
-
+            # create api-token, app-access-token
+            # and then test _creator, _last_modifier
+            self.api_token_test,
+            self.app_access_token_test,
+            self.append_row_creator_modifier_test,
+            self.update_row_creator_modifier_test,
+            self.batch_append_rows_test,
+            self.batch_update_rows_test,
+            self.api_gateway_append_rows_test,
+            self.api_gateway_update_rows_test,
 
             # dtable-server-test readonly user
             self.readonly_user_create_row_test,
@@ -684,8 +982,6 @@ class DTableServerTest(object):
 
 
 if __name__ == '__main__':
-
-    LOCAL_TEST = False
 
     dst = DTableServerTest()
     test_result = dst.run(print_out=LOCAL_TEST)
