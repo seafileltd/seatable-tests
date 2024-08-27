@@ -82,8 +82,9 @@ REFERENCES = [
         'type': 'GroupBy',
         'sql': "select  多选, min(数字) from Table1 group by 多选",
         'expected_result': [
-            {'多选': ['击剑', '足球'], 'MIN(数字)': 10},
-            {'多选': ['篮球', '击剑'], 'MIN(数字)': 20}
+            {'多选': ['篮球'], 'MIN(数字)': 20}, 
+            {'多选': ['击剑'], 'MIN(数字)': 10}, 
+            {'多选': ['足球'], 'MIN(数字)': 10}
         ]
     },
 
