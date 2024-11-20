@@ -38,6 +38,8 @@ class DTableServerTest(object):
 
         self.api_token_dict = {}
 
+        self.dtable_server_api_url = ''
+
     def _format_error_msg(self, api_url, api_name, msg):
         return "[API:%s][URL: %s] error: %s" % (api_name, api_url, msg)
 
@@ -64,7 +66,7 @@ class DTableServerTest(object):
     # Base ping test for dtable-web and dtable-server
     def dtable_server_ping_test(self):
         name = 'dtable server ping'
-        url = DTABLE_SERVER_URL.rstrip('/') + '/ping/'
+        url = self.dtable_server_api_url.rstrip('/') + '/ping/'
         return self._ping_test(name, url)
 
     def dtable_web_ping_test(self):
@@ -340,7 +342,7 @@ class DTableServerTest(object):
     # API test for dtable-server, including get row, add row, update row, delete row and so on
     def get_dtable_test(self):
         name = 'get dtable test'
-        url = dtable_server_api_url.rstrip('/') + "/dtables/%s/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/dtables/%s/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(self.dtable_access_token)
         try:
@@ -375,7 +377,7 @@ class DTableServerTest(object):
         return success, error_msg
 
     def _create_row(self, name, token, expected_status_code=200):
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(token)
         headers['Content-Type'] = 'application/json'
@@ -405,7 +407,7 @@ class DTableServerTest(object):
         return success, error_msg
 
     def _update_row(self, name, token, expected_status_code=200):
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(token)
         headers['Content-Type'] = 'application/json'
@@ -436,7 +438,7 @@ class DTableServerTest(object):
         return success, error_msg
 
     def _delete_row(self, name, token, expected_status_code=200):
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(token)
         headers['Content-Type'] = 'application/json'
@@ -491,7 +493,7 @@ class DTableServerTest(object):
 
     def filter_row_test(self):
         name = "filter row test"
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/filtered-rows/?table_name=Table1" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/filtered-rows/?table_name=Table1" % self.dtable_uuid
         success, error_msg = False, None
         headers = self._format_header(self.dtable_access_token)
         headers['Content-Type'] = 'application/json'
@@ -533,7 +535,7 @@ class DTableServerTest(object):
 
     def add_row_comment_test(self):
         name = "add row comment"
-        url = dtable_server_api_url.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s&table_id=%s' % (
+        url = self.dtable_server_api_url.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s&table_id=%s' % (
             self.dtable_uuid,
             self.row_id,
             self.table_id,
@@ -567,7 +569,7 @@ class DTableServerTest(object):
 
     def get_row_comment_test(self):
         name = "get row comment"
-        url = dtable_server_api_url.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s' % (
+        url = self.dtable_server_api_url.rstrip('/') + '/api/v1/dtables/%s/comments/?row_id=%s' % (
             self.dtable_uuid,
             self.row_id,
         )
@@ -631,6 +633,8 @@ class DTableServerTest(object):
                 else:
                     success = True
                     info['access_token'] = res.json()['access_token']
+                    if not self.dtable_server_api_url:
+                        self.dtable_server_api_url = res.json()['dtable_server']
             except Exception as err:
                 error_msg = self._format_error_msg(url, name, err)
         return success, error_msg
@@ -643,7 +647,7 @@ class DTableServerTest(object):
         if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
             return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
 
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         headers = self._format_header(api_token_info['access_token'])
         data = {
             'table_name': 'Table1',
@@ -679,7 +683,7 @@ class DTableServerTest(object):
             return False, self._format_error_msg(None, name, 'row created by %s not found' % origin_api_name)
 
         # update
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/" % self.dtable_uuid
         headers = self._format_header(api_token_info['access_token'])
         data = {
             'table_name': 'Table1',
@@ -696,7 +700,7 @@ class DTableServerTest(object):
             return False, self._format_error_msg(url, name, err)
 
         # get
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.app_row_id)
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.app_row_id)
         headers = self._format_header(api_token_info['access_token'])
         params = {
             'table_name': 'Table1'
@@ -724,7 +728,7 @@ class DTableServerTest(object):
         if not api_token_info or not api_token_info.get('api_token') or not api_token_info.get('access_token'):
             return False, self._format_error_msg(None, name, 'api %s info: %s not created or no access token' % (api_name, api_token_info))
 
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/batch-append-rows/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/batch-append-rows/" % self.dtable_uuid
         headers = self._format_header(api_token_info['access_token'])
         data = {
             'table_name': 'Table1',
@@ -761,7 +765,7 @@ class DTableServerTest(object):
             return False, self._format_error_msg(None, name, 'batch row created by %s not found' % origin_api_name)
 
         # update
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/batch-update-rows/" % self.dtable_uuid
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/batch-update-rows/" % self.dtable_uuid
         headers = self._format_header(api_token_info['access_token'])
         data = {
             'table_name': 'Table1',
@@ -782,7 +786,7 @@ class DTableServerTest(object):
             return False, self._format_error_msg(url, name, err)
 
         # get
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.app_batch_row_id)
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.app_batch_row_id)
         headers = self._format_header(api_token_info['access_token'])
         params = {
             'table_name': 'Table1'
@@ -888,7 +892,7 @@ class DTableServerTest(object):
             return False, self._format_error_msg(url, name, err)
 
         # get row
-        url = dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.api_gateway_app_row_id)
+        url = self.dtable_server_api_url.rstrip('/') + "/api/v1/dtables/%s/rows/%s/" % (self.dtable_uuid, self.api_gateway_app_row_id)
         headers = self._format_header(api_token_info['access_token'])
         params = {
             'table_name': 'Table1'
@@ -911,7 +915,6 @@ class DTableServerTest(object):
     def run(self, print_out=True):
         test_funcs_in_order = [
             # ping test
-            self.dtable_server_ping_test,
             self.dtable_web_ping_test,
 
             # dtable-web-test user
@@ -927,6 +930,11 @@ class DTableServerTest(object):
             self.share_base_to_readonly_user_test,
             self.get_base_readonly_access_token_test,
 
+            self.api_token_test,
+            self.app_access_token_test,
+
+            self.dtable_server_ping_test,
+
             # dtable-server-test user
             self.get_dtable_test,
             self.user_create_row_test,
@@ -938,8 +946,6 @@ class DTableServerTest(object):
 
             # create api-token, app-access-token
             # and then test _creator, _last_modifier
-            self.api_token_test,
-            self.app_access_token_test,
             self.append_row_creator_modifier_test,
             self.update_row_creator_modifier_test,
             self.batch_append_rows_test,
