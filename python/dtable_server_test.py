@@ -976,9 +976,9 @@ class DTableServerTest(object):
             self.api_gateway_update_rows_test,
 
             # dtable-server-test readonly user
-            # self.readonly_user_create_row_test,
-            # self.readonly_user_update_row_test,
-            # self.readonly_user_delete_row_test,
+            self.readonly_user_create_row_test,
+            self.readonly_user_update_row_test,
+            self.readonly_user_delete_row_test,
 
 
 
