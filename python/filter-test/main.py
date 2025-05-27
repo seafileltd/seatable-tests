@@ -205,4 +205,3 @@ if __name__ == '__main__':
     base.auth()
     LOCAL_TEST = False
     run(base, LOCAL_TEST, result_table='TestResult')
-    run(base, LOCAL_TEST, result_table='TestResult-2')
