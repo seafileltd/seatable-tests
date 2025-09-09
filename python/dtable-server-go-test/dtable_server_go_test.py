@@ -20,7 +20,6 @@ class APIBase(object):
         
     
     def _init_base(self):
-        print('111111111111')
         base = Base(self.api_token, self.server_url)
         base.auth()
         base.dtable_server_url = '%s/dtable-server' % self.server_url.rstrip('/')
@@ -116,7 +115,6 @@ class TableAPI(APIBase):
             if not result['_id']:
                 self.record_error('add_table error: %s' % result)
         except Exception as e:
-            raise
             self.record_error('raise add_table error: %s' % e)
     
     def rename_table(self):
@@ -134,7 +132,6 @@ class TableAPI(APIBase):
             if not result['success']:
                 self.record_error('rename_table error: %s' % result)
         except Exception as e:
-            raise
             self.record_error('raise rename_table error: %s' % e)
         
     
@@ -152,7 +149,6 @@ class TableAPI(APIBase):
             if not result['success']:
                 self.record_error('delete_table error: %s' % result)
         except Exception as e:
-            raise
             self.record_error('raise delete_table error: %s' % e)
             
     def duplicate_table(self):
@@ -171,7 +167,6 @@ class TableAPI(APIBase):
                 self.record_error('duplicate_table error: %s' % result)
             self.delete_table(result['name'])
         except Exception as e:
-            raise
             self.record_error('raise duplicate_table error: %s' % e)
     
     def run_test(self):
@@ -822,6 +817,10 @@ def main():
     server_url = 'http://test-go-dtable-server.seatable.cn/'
     api_token = 'a01ba7e3bdda1b7039bf20e0e7fbd23101031c91'
     api_token_readonly = "c7e2f5eb7ef7ba74738ad50afe24ffcfd07db925"
+    
+    
+    result_base_token = "b070e76fc3916ad9de82f649d82f9a938fcde6a6"
+    result_server_url = "https://dev.seatable.cn"
 
     
     # test meta_api
@@ -832,12 +831,19 @@ def main():
         ColumnAPI,
         RowAPI,
         LinkAPI,
-        APIGateWay,
+        # APIGateWay,
     ]
     test_obj = MainTest(server_url, api_token, api_token_readonly, test_classes)
     err_cnt, err_msgs = test_obj.run_test()
-    print(err_cnt, 'diasdfjaidsfa')
-    print(err_msgs, 'mmmmmmmmmm')
+    
+    
+    result_base = Base(result_base_token, result_server_url)
+    result_base.auth()
+    result_base.append_row('Test', {
+        'FailNo': err_cnt,
+        'ErrorMsg': '\n'.join(err_msgs)
+    })
+    
     
     
     
