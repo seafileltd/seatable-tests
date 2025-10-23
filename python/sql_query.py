@@ -1,9 +1,10 @@
 from seatable_api import Base, context
 
+from local_settings import BASE_API_TOKEN_FOR_SQL_QUERY, SERVER_URL
 from references import REFERENCES
 
-api_token = context.api_token or "48d7488c9d7267abc020c5a8be497088522dd562"
-server_url = context.server_url or "https://dev.seatable.cn/"
+api_token = BASE_API_TOKEN_FOR_SQL_QUERY
+server_url = SERVER_URL
 
 base = Base(api_token, server_url)
 base.auth()
