@@ -1,6 +1,9 @@
 import requests
 from seatable_api import Base
 
+from local_settings import SERVER_URL_FOR_GO, BASE_API_TOKEN_FOR_GO, BASE_API_TOKEN_FOR_GO_READONLY, SERVER_URL, \
+    BASE_API_TOKEN_FOR_GO_TEST_RESULT
+
 table_name = 'Table1'
 link_table_name = 'Table2'
 
@@ -814,13 +817,13 @@ class MainTest(object):
         
     
 def main():
-    server_url = 'http://test-go-dtable-server.seatable.cn/'
-    api_token = 'a01ba7e3bdda1b7039bf20e0e7fbd23101031c91'
-    api_token_readonly = "c7e2f5eb7ef7ba74738ad50afe24ffcfd07db925"
+    server_url = SERVER_URL_FOR_GO
+    api_token = BASE_API_TOKEN_FOR_GO
+    api_token_readonly = BASE_API_TOKEN_FOR_GO_READONLY
     
     
-    result_base_token = "b070e76fc3916ad9de82f649d82f9a938fcde6a6"
-    result_server_url = "https://dev.seatable.cn"
+    result_base_token = BASE_API_TOKEN_FOR_GO_TEST_RESULT
+    result_server_url = SERVER_URL
 
     
     # test meta_api

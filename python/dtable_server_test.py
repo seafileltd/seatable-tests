@@ -1,10 +1,10 @@
 import requests
 from seatable_api import Base, context
 from constants import DTABLE_SERVER_API_URL, DTABLE_SERVER_URL,DTABLE_WEB_SERVICE_URL, \
-    TEST_USER_EMAIL, TEST_USER_PASSWORD, \
-    TEST_READ_ONLY_USER_EMAIL, TEST_READ_ONLY_USER_PASSWORD, TEST_TABLE_NAME, ENABLE_CLUSTER, \
+    TEST_TABLE_NAME, ENABLE_CLUSTER, \
     API_TOKEN_NAME_1, API_TOKEN_NAME_2, API_GATEWAY_URL, LOCAL_TEST
-
+from local_settings import TEST_USER_EMAIL, TEST_USER_PASSWORD, TEST_READ_ONLY_USER_EMAIL, TEST_READ_ONLY_USER_PASSWORD, \
+    SERVER_URL, BASE_API_TOKEN_FOR_DTABLE_SERVER
 
 if ENABLE_CLUSTER:
     dtable_server_api_url = DTABLE_SERVER_API_URL
@@ -1017,8 +1017,8 @@ if __name__ == '__main__':
     Table_name = 'DTableServerTest'
 
     if not LOCAL_TEST:
-        api_token = context.api_token or "4e118011faa89319b07e426204925d7585dd5037"
-        server_url = context.server_url or "https://dev.seatable.cn/"
+        api_token = BASE_API_TOKEN_FOR_DTABLE_SERVER
+        server_url = SERVER_URL
 
         base = Base(api_token, server_url)
         base.auth()

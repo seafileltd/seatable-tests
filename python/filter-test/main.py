@@ -2,9 +2,11 @@ from seatable_api import Base, SeaTableAPI
 import requests
 import json
 import time
+
+from local_settings import BASE_API_TOKEN_FOR_FILTER_TEST
 from sql_generator import filter2sql
 ENABLE_CLUSTER = True
-API_TOKEN = "1c3db106dd06b7eac9775f89d6601e1667750a5c"
+API_TOKEN = BASE_API_TOKEN_FOR_FILTER_TEST
 DTABLE_WEB_SERVER_URL = "https://dev.seatable.cn"
 DTABLE_SERVER_URL = "https://dtable-server-dev.seatable.cn"
 DTABLE_SERVER_API_URL = "https://dtable-server-dev-api.seatable.cn"

@@ -1,3 +1,5 @@
+from local_settings import SERVER_URL, BASE_API_TOKEN_FOR_LIST_ROW_REDIRECT_TEST
+
 EXPECTED_RESULT = {
     '文本': 'AA',
     '长文本': 'fsfvvcxvvxvzs\n',
@@ -101,8 +103,8 @@ def run_test(base):
 if __name__ == '__main__':
     from seatable_api import Base
     
-    api_token = "d33e8c40c16d6a3c78ee86ff623ed892b8f0a746"
-    server_url = "https://dev.seatable.cn"
+    api_token = BASE_API_TOKEN_FOR_LIST_ROW_REDIRECT_TEST
+    server_url = SERVER_URL
     
     base = Base(api_token, server_url)
     base.auth()

@@ -1,8 +1,11 @@
-from config import TABLE_NAME, TEST_RESULTS_TABLE_NAME, API_TOKEN, SERVER_URL
+from config import TABLE_NAME, TEST_RESULTS_TABLE_NAME
 from APIGatewayTest import APIGatewayTest
 from seatable_api import Base
 import requests
 import time
+
+from local_settings import BASE_API_TOKEN_FOR_API_GATEWAY_TEST, SERVER_URL
+
 
 class APIGatewayMetaTest(APIGatewayTest):
 
@@ -184,7 +187,7 @@ class APIGatewayProxyTest(APIGatewayTest):
 
 
 if __name__ == "__main__":
-    base = Base(API_TOKEN, SERVER_URL)
+    base = Base(BASE_API_TOKEN_FOR_API_GATEWAY_TEST, SERVER_URL)
     base.auth()
 
     test_db = APIGatewayMetaTest(base)

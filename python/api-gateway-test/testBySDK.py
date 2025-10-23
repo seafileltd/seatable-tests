@@ -2,7 +2,9 @@ from APIGatewayTest import APIGatewayTest
 from sdkTest import BaseOperations
 from sdkTest.TableOperations import ViewOperations, ColumnOperations, RowOperations,LinkOperations
 from seatable_api import Base
-from config import API_TOKEN, SERVER_URL
+
+from local_settings import BASE_API_TOKEN_FOR_API_GATEWAY_TEST, SERVER_URL
+
 
 class MetaTest_PythonSDK(APIGatewayTest):
     def run_workflow(self):
@@ -28,7 +30,7 @@ class MetaTest_PythonSDK(APIGatewayTest):
            
 if __name__ == '__main__':
 
-    base = Base(API_TOKEN, SERVER_URL)
+    base = Base(BASE_API_TOKEN_FOR_API_GATEWAY_TEST, SERVER_URL)
     base.auth()
 
     sdk_test = MetaTest_PythonSDK(base)

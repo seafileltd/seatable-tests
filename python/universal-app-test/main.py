@@ -1,12 +1,14 @@
 from seatable_api import Base, Account
 import requests
 
-SERVER_URL = "https://dev.seatable.cn/"
-API_TOKEN = "74bf9076b1df445bb304b3e4f58df403f0aca950"
-EMAIL = "jiwei.ran@seafile.com"
-PWD = "Seafile123#$%"
+from local_settings import TEST_APP_USER_EMAIL, TEST_APP_USER_PWD, SERVER_URL, BASE_API_TOKEN_FOR_APP_TEST, \
+    TEST_APP_TMP_APP_USER_EMAIL
 
-TMP_APP_USER = "freeplant@163.com"
+API_TOKEN = BASE_API_TOKEN_FOR_APP_TEST
+EMAIL = TEST_APP_USER_EMAIL
+PWD = TEST_APP_USER_PWD
+
+TMP_APP_USER = TEST_APP_TMP_APP_USER_EMAIL
 
 APP_TOKEN = "f25bf553-5e90-4329-91af-67a3e01e21cc"
 

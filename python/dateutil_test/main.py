@@ -1,7 +1,10 @@
 from seatable_api import Base, dateutils
 import json
-API_TOKEN = "6e8eb3c52cf7d203632cb8225bb132a645250e73"
-DTABLE_WEB_SERVER_URL = "https://dev.seatable.cn"
+
+from local_settings import SERVER_URL, BASE_API_TOKEN_FOR_DATEUTIL_TEST
+
+API_TOKEN = BASE_API_TOKEN_FOR_DATEUTIL_TEST
+DTABLE_WEB_SERVER_URL = SERVER_URL
 
 
 
