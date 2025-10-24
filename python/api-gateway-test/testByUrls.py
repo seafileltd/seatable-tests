@@ -1,3 +1,9 @@
+import os
+import sys
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_script_dir)
+sys.path.append(parent_dir)
+
 from config import TABLE_NAME, TEST_RESULTS_TABLE_NAME
 from APIGatewayTest import APIGatewayTest
 from seatable_api import Base

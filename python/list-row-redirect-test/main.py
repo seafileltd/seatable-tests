@@ -1,3 +1,10 @@
+import os
+import sys
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_script_dir)
+sys.path.append(parent_dir)
+
+
 from local_settings import SERVER_URL, BASE_API_TOKEN_FOR_LIST_ROW_REDIRECT_TEST
 
 EXPECTED_RESULT = {
