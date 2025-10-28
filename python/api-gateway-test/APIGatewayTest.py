@@ -1,4 +1,10 @@
-from config import SERVER_URL
+import os
+import sys
+current_script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_script_dir)
+sys.path.append(parent_dir)
+
+from local_settings import SERVER_URL
 from seatable_api import Base
 
 class APIGatewayTest(object):
