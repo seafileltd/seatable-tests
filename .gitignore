@@ -4,3 +4,5 @@
 *.pyc
 local_constants.py
 python/local_settings.py
+
+.python-version
