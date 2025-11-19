@@ -7,13 +7,13 @@ sys.path.append(parent_dir)
 
 
 import requests
-from seatable_api import Base, Account
+from seatable_api import Base as _Base, Account
 from seatable_api.constants import ColumnTypes
 
 from local_settings import TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL, TEST_WORKFLOW_GROUP_NAME, LOCAL_TEST
 
 
-class TestBase:
+class Base:
 
     def __init__(self, account: Account, name: str, group_name: str):
         self.account = account
@@ -23,7 +23,7 @@ class TestBase:
         assert self.workspace
         resp = self.account.add_base(name, self.workspace['id'])
         assert resp
-        self.base: Base = account.get_base(self.workspace['id'], name)
+        self.base: _Base = account.get_base(self.workspace['id'], name)
         assert self.base
 
     def delete_base(self):
@@ -34,48 +34,48 @@ class TestBase:
 
 class TestTable:
 
-    def __init__(self, test_base: TestBase, new_table_name=None):
-        self.test_base = test_base
+    def __init__(self, base: Base, new_table_name=None):
+        self.base = base
         if new_table_name:
-            self.table = self.test_base.base.add_table(new_table_name)
+            self.table = self.base.base.add_table(new_table_name)
             self.table_id = self.table['_id']
         else:
             self.table_id = '0000'
-            self.table = self.test_base.base.get_metadata()['tables'][0]
+            self.table = self.base.base.get_metadata()['tables'][0]
 
         self.participants_column_name = 'participants'
-        self.participants_column = self.test_base.base.insert_column(self.table_id, self.participants_column_name, ColumnTypes.COLLABORATOR)
+        self.participants_column = self.base.base.insert_column(self.table_id, self.participants_column_name, ColumnTypes.COLLABORATOR)
         assert self.participants_column
 
         self.state_column_name = 'state'
-        self.state_column = self.test_base.base.insert_column(self.table_id, self.state_column_name, ColumnTypes.SINGLE_SELECT)
+        self.state_column = self.base.base.insert_column(self.table_id, self.state_column_name, ColumnTypes.SINGLE_SELECT)
         assert self.state_column
 
         self.text_column_name = 'text'
-        self.text_column = self.test_base.base.insert_column(self.table_id, self.text_column_name, ColumnTypes.TEXT)
+        self.text_column = self.base.base.insert_column(self.table_id, self.text_column_name, ColumnTypes.TEXT)
         assert self.text_column
 
         self.collaborator_column_name = 'collaborator'
-        self.collaborator_column = self.test_base.base.insert_column(self.table_id, self.collaborator_column_name, ColumnTypes.COLLABORATOR)
+        self.collaborator_column = self.base.base.insert_column(self.table_id, self.collaborator_column_name, ColumnTypes.COLLABORATOR)
         assert self.collaborator_column
 
 
-class TestWorkflow:
+class Workflow:
 
-    def __init__(self, test_base: TestBase, test_table: TestTable, name: str):
+    def __init__(self, base: Base, table: TestTable, name: str):
         self.workflow = None
-        self.test_base = test_base
-        self.test_table = test_table
+        self.base = base
+        self.table = table
         self.name = name
 
         data = {
-            'workspace_id': self.test_base.workspace['id'],
-            'name': self.test_base.name,
+            'workspace_id': self.base.workspace['id'],
+            'name': self.base.name,
             'workflow_config': json.dumps(self.gen_init_workflow_config())
         }
 
         url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/"
-        resp = requests.post(url, headers=test_base.account.token_headers, data=data)
+        resp = requests.post(url, headers=base.account.token_headers, data=data)
         assert resp.ok
         self.workflow = resp.json()['workflow']
         assert self.workflow
@@ -84,8 +84,8 @@ class TestWorkflow:
         return {
             'workflow_name': self.name,
             'table_id': '0000',
-            'state_column_key': self.test_table.state_column['key'],
-            'participants_column_key': self.test_table.participants_column['key'],
+            'state_column_key': self.table.state_column['key'],
+            'participants_column_key': self.table.participants_column['key'],
             'nodes': [
                 {
                     '_id': 'init',
@@ -96,8 +96,8 @@ class TestWorkflow:
                     'node_form': {
                         'readwrite_columns': [
                             {'key': '0000'},
-                            {'key': self.test_table.text_column['key']},
-                            {'key': self.test_table.collaborator_column['key']},
+                            {'key': self.table.text_column['key']},
+                            {'key': self.table.collaborator_column['key']},
                         ]
                     }
                 },
@@ -109,8 +109,8 @@ class TestWorkflow:
                     'node_form': {
                         'readonly_columns': [
                             {'key': '0000'},
-                            {'key': self.test_table.text_column['key']},
-                            {'key': self.test_table.collaborator_column['key']},
+                            {'key': self.table.text_column['key']},
+                            {'key': self.table.collaborator_column['key']},
                         ]
                     }
                 },
@@ -118,7 +118,7 @@ class TestWorkflow:
                     '_id': '54420',
                     'type': 'normal',
                     'name': 'Node1',
-                    'participants': [self.test_base.account.username],
+                    'participants': [self.base.account.username],
                     'participants_type': 'static',
                     'node_participants_column_key': '',
                     'next_node_id': '1',
@@ -126,8 +126,8 @@ class TestWorkflow:
                     'node_form': {
                         'readwrite_columns': [
                             {'key': '0000'},
-                            {'key': self.test_table.text_column['key']},
-                            {'key': self.test_table.collaborator_column['key']},
+                            {'key': self.table.text_column['key']},
+                            {'key': self.table.collaborator_column['key']},
                         ],
                         'readonly_columns': []
                     }
@@ -162,7 +162,7 @@ class TestWorkflow:
         ]
         workflow_config['nodes'][2]['next_node_id'] = '66666'
         workflow_config['nodes'][2]['participants_type'] = 'dynamic'
-        workflow_config['nodes'][2]['node_participants_column_key'] = self.test_table.collaborator_column['key']
+        workflow_config['nodes'][2]['node_participants_column_key'] = self.table.collaborator_column['key']
         workflow_config['nodes'][2]['conditional_next_nodes'] = [
             {
                 "_id": "496385",
@@ -189,8 +189,8 @@ class TestWorkflow:
             'node_form': {
                 'readwrite_columns': [
                     {'key': '0000'},
-                    {'key': self.test_table.text_column['key']},
-                    {'key': self.test_table.collaborator_column['key']},
+                    {'key': self.table.text_column['key']},
+                    {'key': self.table.collaborator_column['key']},
                 ],
                 'readonly_columns': []
             }
@@ -204,34 +204,34 @@ class TestWorkflow:
         self.workflow = workflow
 
 
-class TestWorkflowTask:
+class WorkflowTask:
 
-    def __init__(self, test_base: TestBase, test_table: TestTable, test_workflow: TestWorkflow, initiator_account: Account, workflow_task: dict):
-        self.test_base = test_base
-        self.test_table = test_table
-        self.test_workflow = test_workflow
+    def __init__(self, base: Base, table: TestTable, workflow: Workflow, initiator_account: Account, workflow_task: dict):
+        self.base = base
+        self.table = table
+        self.workflow = workflow
         self.initiator_account = initiator_account
 
         self.workflow_task = workflow_task
 
     @classmethod
-    def submit_workflow_task(cls, test_base: TestBase, test_table: TestTable, test_workflow: TestWorkflow, initiator_account: Account, form_data: dict):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{test_workflow.workflow['token']}/task-submit/"
+    def submit_workflow_task(cls, base: Base, table: TestTable, workflow: Workflow, initiator_account: Account, form_data: dict):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{workflow.workflow['token']}/task-submit/"
         data = {'row_data': json.dumps(form_data)}
         resp = requests.post(url, headers=initiator_account.token_headers, data=data)
         assert resp.ok
         workflow_task = resp.json()['task']
         assert workflow_task
-        sql = f"SELECT * FROM `{test_table.table['name']}` WHERE _id='{workflow_task['row_id']}'"
-        rows = test_base.base.query(sql)
+        sql = f"SELECT * FROM `{table.table['name']}` WHERE _id='{workflow_task['row_id']}'"
+        rows = base.base.query(sql)
         assert rows
-        test_workflow_task = cls(test_base, test_table, test_workflow, initiator_account, workflow_task)
-        test_workflow_task.reload_workflow_task()
-        test_workflow_task.check_row()
-        return test_workflow_task
+        workflow_task = cls(base, table, workflow, initiator_account, workflow_task)
+        workflow_task.reload_workflow_task()
+        workflow_task.check_row()
+        return workflow_task
 
-    def test_initiatied_tasks(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.test_workflow.workflow['token']}/tasks/"
+    def initiatied_tasks(self):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/"
         params = {
             'filter_type': 'initiated'
         }
@@ -244,17 +244,17 @@ class TestWorkflowTask:
         self.workflow_task = task
 
     def reload_workflow_task(self):
-        return self.test_initiatied_tasks()
+        return self.initiatied_tasks()
 
     def check_row(self):
-        sql = f"SELECT `{self.test_table.state_column_name}`, `{self.test_table.participants_column_name}` FROM `{self.test_table.table['name']}` WHERE _id='{self.workflow_task['row_id']}'"
-        results = self.test_base.base.query(sql)
+        sql = f"SELECT `{self.table.state_column_name}`, `{self.table.participants_column_name}` FROM `{self.table.table['name']}` WHERE _id='{self.workflow_task['row_id']}'"
+        results = self.base.base.query(sql)
         assert results
-        assert results[0].get(self.test_table.state_column_name) == self.workflow_task['current_node']['name']
-        assert (results[0].get(self.test_table.participants_column_name) or []) == [item['email'] for item in self.workflow_task['participants']]
+        assert results[0].get(self.table.state_column_name) == self.workflow_task['current_node']['name']
+        assert (results[0].get(self.table.participants_column_name) or []) == [item['email'] for item in self.workflow_task['participants']]
 
-    def test_transfer_task(self, transfer_account: Account, row_data: dict):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.test_workflow.workflow['token']}/tasks/{self.workflow_task['id']}/transfer/"
+    def transfer_task(self, transfer_account: Account, row_data: dict):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task['id']}/transfer/"
         data = {
             'row_data': json.dumps(row_data),
             'node_id': self.workflow_task['node_id']
@@ -270,22 +270,22 @@ def main():
     account.auth()
     account.load_account_info()
 
-    test_base = TestBase(account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
-    test_table = TestTable(test_base)
+    base = Base(account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
+    table = TestTable(base)
     try:
-        test_workflow = TestWorkflow(test_base, test_table, 'test-workflow')
+        workflow = Workflow(base, table, 'test-workflow')
 
-        test_workflow.update_workflow_name('new-test-workflow', test_base.account)
-        test_workflow.update_workflow_name('test-workflow', test_base.account)
-        test_workflow.update_workflow_config(test_base.account)
+        workflow.update_workflow_name('new-test-workflow', base.account)
+        workflow.update_workflow_name('test-workflow', base.account)
+        workflow.update_workflow_config(base.account)
 
-        test_workflow_task = TestWorkflowTask.submit_workflow_task(test_base, test_table, test_workflow, account, {test_table.text_column_name: 'abc'})
+        workflow_task = WorkflowTask.submit_workflow_task(base, table, workflow, account, {table.text_column_name: 'abc'})
 
-        test_workflow_task.test_transfer_task(test_base.account, {test_table.text_column_name: 'def'})
+        workflow_task.transfer_task(base.account, {table.text_column_name: 'def'})
     except Exception as e:
         raise e
     finally:
-        test_base.delete_base()
+        base.delete_base()
 
 
 if __name__ == '__main__':
