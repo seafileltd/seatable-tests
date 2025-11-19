@@ -265,6 +265,31 @@ class WorkflowTask:
         self.check_row()
 
 
+class WorkflowTest:
+    """workflow CRUD"""
+    pass
+
+
+class WorkflowTaskTest:
+    """workflow task submit and transfer"""
+    pass
+
+
+class WorkflowTaskViewTest:
+    """workflow view for initiator, admin, participant tests"""
+    pass
+
+
+class WorkflowTaskListTest:
+    """list of tasks about ongoing, initiatied-of-one-workflow and all-of-one-workflow"""
+    pass
+
+
+class WorkflowFolderTest:
+    """Folder CRUD"""
+    pass
+
+
 def main():
     account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
     account.auth()
