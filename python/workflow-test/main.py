@@ -1,6 +1,9 @@
 import json
 import os
+import logging
 import sys
+import traceback
+from functools import wraps
 current_script_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_script_dir)
 sys.path.append(parent_dir)
@@ -10,7 +13,8 @@ import requests
 from seatable_api import Base as _Base, Account
 from seatable_api.constants import ColumnTypes
 
-from local_settings import TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL, TEST_WORKFLOW_GROUP_NAME, LOCAL_TEST
+from local_settings import TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL, \
+    TEST_WORKFLOW_GROUP_NAME, LOCAL_TEST, BASE_API_TOKEN_FOR_WORKFLOW
 
 
 class Base:
@@ -26,13 +30,21 @@ class Base:
         self.base: _Base = account.get_base(self.workspace['id'], name)
         assert self.base
 
-    def delete_base(self):
+    def delete(self):
         url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workspace/{self.workspace['id']}/dtable/"
         resp = requests.delete(url, headers=self.account.token_headers, json={'name': self.name})
         assert resp.ok
 
+    def list_workflows(self):
+        params = {'workspace_id': self.workspace['id'], 'name': self.name}
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/"
+        resp = requests.get(url, headers=self.account.token_headers, params=params)
+        assert resp.ok
+        workflow_list = resp.json()['workflow_list']
+        return workflow_list
 
-class TestTable:
+
+class Table:
 
     def __init__(self, base: Base, new_table_name=None):
         self.base = base
@@ -59,10 +71,14 @@ class TestTable:
         self.collaborator_column = self.base.base.insert_column(self.table_id, self.collaborator_column_name, ColumnTypes.COLLABORATOR)
         assert self.collaborator_column
 
+        self.number_column_name = 'number'
+        self.number_column = self.base.base.insert_column(self.table_id, self.number_column_name, ColumnTypes.NUMBER)
+        assert self.number_column
+
 
 class Workflow:
 
-    def __init__(self, base: Base, table: TestTable, name: str):
+    def __init__(self, base: Base, table: Table, name: str):
         self.workflow = None
         self.base = base
         self.table = table
@@ -96,8 +112,8 @@ class Workflow:
                     'node_form': {
                         'readwrite_columns': [
                             {'key': '0000'},
-                            {'key': self.table.text_column['key']},
                             {'key': self.table.collaborator_column['key']},
+                            {'key': self.table.number_column['key']},
                         ]
                     }
                 },
@@ -111,6 +127,7 @@ class Workflow:
                             {'key': '0000'},
                             {'key': self.table.text_column['key']},
                             {'key': self.table.collaborator_column['key']},
+                            {'key': self.table.number_column['key']},
                         ]
                     }
                 },
@@ -128,6 +145,7 @@ class Workflow:
                             {'key': '0000'},
                             {'key': self.table.text_column['key']},
                             {'key': self.table.collaborator_column['key']},
+                            {'key': self.table.number_column['key']},
                         ],
                         'readonly_columns': []
                     }
@@ -203,10 +221,15 @@ class Workflow:
         assert workflow
         self.workflow = workflow
 
+    def delete(self, account: Account):
+        url = f'{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/'
+        resp = requests.delete(url, headers=account.token_headers)
+        assert resp.ok
+
 
 class WorkflowTask:
 
-    def __init__(self, base: Base, table: TestTable, workflow: Workflow, initiator_account: Account, workflow_task: dict):
+    def __init__(self, base: Base, table: Table, workflow: Workflow, initiator_account: Account, workflow_task: dict):
         self.base = base
         self.table = table
         self.workflow = workflow
@@ -215,7 +238,7 @@ class WorkflowTask:
         self.workflow_task = workflow_task
 
     @classmethod
-    def submit_workflow_task(cls, base: Base, table: TestTable, workflow: Workflow, initiator_account: Account, form_data: dict):
+    def submit_workflow_task(cls, base: Base, table: Table, workflow: Workflow, initiator_account: Account, form_data: dict):
         url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{workflow.workflow['token']}/task-submit/"
         data = {'row_data': json.dumps(form_data)}
         resp = requests.post(url, headers=initiator_account.token_headers, data=data)
@@ -227,10 +250,10 @@ class WorkflowTask:
         assert rows
         workflow_task = cls(base, table, workflow, initiator_account, workflow_task)
         workflow_task.reload_workflow_task()
-        workflow_task.check_row()
+        workflow_task.check_task_state()
         return workflow_task
 
-    def initiatied_tasks(self):
+    def reload_workflow_task(self):
         url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/"
         params = {
             'filter_type': 'initiated'
@@ -243,10 +266,7 @@ class WorkflowTask:
         assert task
         self.workflow_task = task
 
-    def reload_workflow_task(self):
-        return self.initiatied_tasks()
-
-    def check_row(self):
+    def check_task_state(self):
         sql = f"SELECT `{self.table.state_column_name}`, `{self.table.participants_column_name}` FROM `{self.table.table['name']}` WHERE _id='{self.workflow_task['row_id']}'"
         results = self.base.base.query(sql)
         assert results
@@ -262,55 +282,491 @@ class WorkflowTask:
         resp = requests.post(url, headers=transfer_account.token_headers, data=data)
         assert resp.ok
         self.reload_workflow_task()
-        self.check_row()
+        self.check_task_state()
+
+
+def wrap_test(name, describe=None, raise_exception=True):
+    def actual_decorator(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+
+            try:
+                func(self, *args, **kwargs)
+            except Exception as e:
+                self.test_results.append({
+                    'name': name,
+                    'describe': describe,
+                    'function': func.__name__,
+                    'is_pass': False,
+                    'error': traceback.format_exc(),
+                })
+                if raise_exception:
+                    raise e
+            else:
+                self.test_results.append({
+                    'name': name,
+                    'describe': describe,
+                    'function': func.__name__,
+                    'is_pass': True,
+                    'error': None
+                })
+
+        return wrapper
+    return actual_decorator
+
 
 
 class WorkflowTest:
     """workflow CRUD"""
-    pass
+
+    def __init__(self):
+        self.account: Account = None
+        self.base: Base = None
+        self.table: Table = None
+        self.workflow: Workflow = None
+        self.test_results = []
+
+    @wrap_test('Test create workflow')
+    def test_create_workflow(self):
+        self.workflow = Workflow(self.base, self.table, 'test-workflow')
+
+    @wrap_test('Test list workflows')
+    def test_list_workflows(self):
+        workflow_list = self.base.list_workflows()
+        assert next(filter(lambda workflow: workflow['id'] == self.workflow.workflow['id'], workflow_list), None)
+        assert next(filter(lambda workflow: workflow['id'] == self.workflow.workflow['id'], workflow_list), None)['id'] == self.workflow.workflow['id']
+
+    @wrap_test('Test update workflow')
+    def test_update_workflow(self):
+        self.workflow.update_workflow_name('new-test-workflow', self.base.account)
+        self.workflow.update_workflow_name('test-workflow', self.base.account)
+        self.workflow.update_workflow_config(self.base.account)
+
+    @wrap_test('Test delete workflow')
+    def test_delete_workflow(self):
+        self.workflow.delete(self.base.account)
+        workflow_list = self.base.list_workflows()
+        assert not workflow_list
+
+    def run(self):
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account.auth()
+        self.account.load_account_info()
+
+        self.base = Base(self.account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
+        self.table = Table(self.base)
+
+        try:
+            self.test_create_workflow()
+            self.test_list_workflows()
+            self.test_update_workflow()
+            self.test_delete_workflow()
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            self.base.delete()
 
 
 class WorkflowTaskTest:
     """workflow task submit and transfer"""
-    pass
+
+    def __init__(self):
+        self.account: Account = None
+        self.base: Base = None
+        self.table: Table = None
+        self.workflow: Workflow = None
+        self.workflow_task: WorkflowTask = None
+        self.test_results = []
+
+    @wrap_test('Test submit workflow task')
+    def test_submit_workflow_task(self):
+        self.workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.table['columns'][0]['name']: 'abc', self.table.collaborator_column_name: [self.account.username]})
+
+    @wrap_test('Test transfer workflow task')
+    def test_transfer_workflow_task(self):
+        self.workflow_task.transfer_task(self.account, {self.table.text_column_name: 'def'})
+
+    @wrap_test('Test submit workflow task with conditional next node')
+    def test_submit_workflow_task_with_conditional_next_node(self):
+        self.workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.table['columns'][0]['name']: '123'})
+        assert self.workflow_task.workflow_task['task_state'] == 'finished'
+
+    @wrap_test('Test transfer with conditional next node')
+    def test_transfer_workflow_task_with_conditional_next_node(self):
+        self.workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.table['columns'][0]['name']: 'def', self.table.collaborator_column_name: [self.account.username]})
+        self.workflow_task.transfer_task(self.account, {self.table.table['columns'][0]['name']: '123'})
+        assert self.workflow_task.workflow_task['task_state'] == 'finished'
+
+    def run(self):
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account.auth()
+        self.account.load_account_info()
+
+        self.base = Base(self.account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
+        self.table = Table(self.base)
+        self.workflow = Workflow(self.base, self.table, 'test-workflow')
+
+        # update workflow_config to make workflow ready
+        self.workflow.update_workflow_config(self.account)
+
+        try:
+            self.test_submit_workflow_task()
+            self.test_transfer_workflow_task()
+
+            self.test_submit_workflow_task_with_conditional_next_node()
+
+            self.test_transfer_workflow_task_with_conditional_next_node()
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            self.base.delete()
 
 
 class WorkflowTaskViewTest:
     """workflow view for initiator, admin, participant tests"""
-    pass
+
+    def __init__(self):
+        self.account: Account = None
+        self.base: Base = None
+        self.table: Table = None
+        self.workflow: Workflow = None
+        self.workflow_task: WorkflowTask = None
+        self.test_results = []
+
+    @wrap_test('Test view task as initiator')
+    def test_initiator_view(self):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/initiator-view/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        resp_json = resp.json()
+        row = resp_json['row']
+        nodes = resp_json.get('nodes')
+        assert nodes
+        init_node = next(filter(lambda node: node['type'] == 'init', nodes), None)
+        assert init_node
+        node_form = init_node.get('node_form')
+        assert node_form
+        readwrite_columns = node_form.get('readwrite_columns') or []
+        valid_column_keys = [col['key'] for col in readwrite_columns] + [self.table.state_column['key'], self.table.participants_column['key']]
+        for column_key in row:
+            if column_key == '_id':
+                continue
+            assert column_key in valid_column_keys
+
+    @wrap_test('Test view task as participant')
+    def test_participant_view(self):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        resp_json = resp.json()
+        row = resp_json['row']
+        current_node = resp_json['current_node']
+        node_form = current_node.get('node_form')
+        assert node_form
+        readonly_columns = node_form.get('readonly_columns') or []
+        readwrite_columns = node_form.get('readwrite_columns') or []
+        valid_column_keys = [col['key'] for col in readwrite_columns + readonly_columns] + [self.table.state_column['key'], self.table.participants_column['key']]
+        for column_key in row:
+            if column_key == '_id':
+                continue
+            assert column_key in valid_column_keys
+
+    @wrap_test('Test view task as admin')
+    def test_admin_view(self):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/admin-view/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        resp_json = resp.json()
+        row = resp_json['row']
+        current_node = resp_json['current_node']
+        node_form = current_node.get('node_form')
+        assert node_form
+        readonly_columns = node_form.get('readonly_columns') or []
+        readwrite_columns = node_form.get('readwrite_columns') or []
+        valid_column_keys = [col['key'] for col in readwrite_columns + readonly_columns] + [self.table.state_column['key'], self.table.participants_column['key']]
+        for column_key in row:
+            if column_key == '_id':
+                continue
+            assert column_key in valid_column_keys
+
+    def run(self):
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account.auth()
+        self.account.load_account_info()
+
+        self.base = Base(self.account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
+        self.table = Table(self.base)
+        self.workflow = Workflow(self.base, self.table, 'test-workflow')
+
+        # update workflow_config to make workflow ready
+        self.workflow.update_workflow_config(self.account)
+        self.workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.table['columns'][0]['name']: 'abc', self.table.collaborator_column_name: [self.account.username]})
+
+        try:
+            self.test_initiator_view()
+            self.test_participant_view()
+            self.test_admin_view()
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            self.base.delete()
 
 
 class WorkflowTaskListTest:
     """list of tasks about ongoing, initiatied-of-one-workflow and all-of-one-workflow"""
-    pass
+
+    def __init__(self):
+        self.account: Account = None
+        self.base: Base = None
+        self.table: Table = None
+        self.workflow: Workflow = None
+        self.node1_workflow_task: WorkflowTask = None
+        self.node2_workflow_task: WorkflowTask = None
+        self.completed_workflow_task: WorkflowTask = None
+        self.test_results = []
+
+    @wrap_test('Test submitted tasks')
+    def test_submitted_tasks(self):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=initiated"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        task_list = resp.json()['task_list']
+        assert len(task_list) == 3
+        count = resp.json()['count']
+        assert count == 3
+
+    @wrap_test('Test ongoing tasks')
+    def test_ongoing_tasks(self):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=ongoing"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        task_list = resp.json()['task_list']
+        assert len(task_list) == 2
+        count = resp.json()['count']
+        assert count == 2
+
+    @wrap_test('Test all tasks')
+    def test_all_tasks(self):
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=all"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        task_list = resp.json()['task_list']
+        assert len(task_list) == 3
+        count = resp.json()['count']
+        assert count == 3
+
+    def run(self):
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account.auth()
+        self.account.load_account_info()
+
+        self.base = Base(self.account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
+        self.table = Table(self.base)
+        self.workflow = Workflow(self.base, self.table, 'test-workflow')
+
+        # update workflow_config to make workflow ready
+        self.workflow.update_workflow_config(self.account)
+        self.node1_workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.table['columns'][0]['name']: 'abc', self.table.collaborator_column_name: [self.account.username]})
+        self.node2_workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.table['columns'][0]['name']: 'abc', self.table.collaborator_column_name: [self.account.username]})
+        self.node2_workflow_task.transfer_task(self.account, {self.table.table['columns'][0]['name']: 'def'})
+        self.completed_workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.table['columns'][0]['name']: '123'})
+
+        try:
+            self.test_submitted_tasks()
+            self.test_ongoing_tasks()
+            self.test_all_tasks()
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            self.base.delete()
 
 
-class WorkflowFolderTest:
-    """Folder CRUD"""
-    pass
+class InvalidTaskInOngoingListTest:
+
+    def __init__(self):
+        self.account: Account = None
+
+        self.base1: Base = None
+        self.base2: Base = None
+
+        self.table1: Table = None
+        self.table2: Table = None
+
+        self.workflow1: Workflow = None
+        self.workflow2: Workflow = None
+
+        self.workflow1_task: WorkflowTask = None
+        self.workflow2_task: WorkflowTask = None
+
+        self.test_results = []
+
+    @wrap_test('Test invalid task in ongoing list', describe='Test whether a base with only one workflow can correctly retrieve the ongoing list after the workflow invalid', raise_exception=False)
+    def test_invalid_task_in_ongoing_list(self):
+        self.workflow1 = Workflow(self.base1, self.table1, 'test-workflow-1')
+        self.workflow1.update_workflow_config(self.account)
+        self.workflow2 = Workflow(self.base2, self.table2, 'test-workflow-2')
+        self.workflow2.update_workflow_config(self.account)
+
+        self.workflow1_task = WorkflowTask.submit_workflow_task(self.base1, self.table1, self.workflow1, self.account, {self.table1.table['columns'][0]['name']: 'abc', self.table1.collaborator_column_name: [self.account.username]})
+        self.workflow2_task = WorkflowTask.submit_workflow_task(self.base2, self.table2, self.workflow2, self.account, {self.table2.table['columns'][0]['name']: 'def', self.table2.collaborator_column_name: [self.account.username]})
+
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        task_list: list = resp.json()['task_list']
+        find_workflow1_task = next(filter(lambda task: task['id'] == self.workflow1_task.workflow_task['id'], task_list), None)
+        assert find_workflow1_task
+        assert find_workflow1_task['is_valid']
+        find_workflow2_task = next(filter(lambda task: task['id'] == self.workflow2_task.workflow_task['id'], task_list), None)
+        assert find_workflow2_task
+        assert find_workflow2_task['is_valid']
+
+        # delete column to make workflow invalid
+        self.base2.base.delete_column(self.table2.table['name'], self.table2.state_column['key'])
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        task_list: list = resp.json()['task_list']
+        find_workflow1_task = next(filter(lambda task: task['id'] == self.workflow1_task.workflow_task['id'], task_list), None)
+        assert find_workflow1_task
+        assert find_workflow1_task['is_valid']
+        find_workflow2_task = next(filter(lambda task: task['id'] == self.workflow2_task.workflow_task['id'], task_list), None)
+        assert find_workflow2_task
+        assert not find_workflow2_task['is_valid']
+
+    def run(self):
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account.auth()
+        self.account.load_account_info()
+
+        self.base1 = Base(self.account, 'test-workflow-1', TEST_WORKFLOW_GROUP_NAME)
+        self.table1 = Table(self.base1)
+
+        self.base2 = Base(self.account, 'test-workflow-2', TEST_WORKFLOW_GROUP_NAME)
+        self.table2 = Table(self.base2)
+
+        try:
+            self.test_invalid_task_in_ongoing_list()
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            self.base1.delete()
+            self.base2.delete()
+
+
+class InvalidFormColumnTaskDetailTest:
+
+    def __init__(self):
+        self.account: Account = None
+        self.base: Base = None
+        self.table: Table = None
+        self.workflow: Workflow = None
+        self.workflow_task: WorkflowTask = None
+        self.test_results = []
+
+    @wrap_test('Test invalid form column task detail', describe='Test whether task details can be correctly retrieved after a field in the workflow node is deleted', raise_exception=False)
+    def test_invalid_form_column_task_detail(self):
+        self.workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.collaborator_column_name: [self.account.username], self.table.text_column_name: 'abc', self.table.number_column_name: 123})
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        resp_json = resp.json()
+        readwrite_columns_keys = [col['key'] for col in (resp_json.get('readwrite_columns') or [])]
+        assert self.table.number_column['key'] in readwrite_columns_keys
+
+        self.base.base.delete_column(self.table.table['name'], self.table.number_column['key'])
+
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
+        resp = requests.get(url, headers=self.account.token_headers)
+        assert resp.ok
+        resp_json = resp.json()
+        readwrite_columns_keys = [col['key'] for col in (resp_json.get('readwrite_columns') or [])]
+        assert self.table.number_column['key'] not in readwrite_columns_keys
+
+    def run(self):
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account.auth()
+        self.account.load_account_info()
+
+        self.base = Base(self.account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
+        self.table = Table(self.base)
+        self.workflow = Workflow(self.base, self.table, 'test-workflow')
+        self.workflow.update_workflow_config(self.account)
+
+        try:
+            self.test_invalid_form_column_task_detail()
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            self.base.delete()
 
 
 def main():
-    account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
-    account.auth()
-    account.load_account_info()
+    test_results = []
 
-    base = Base(account, 'test-workflow', TEST_WORKFLOW_GROUP_NAME)
-    table = TestTable(base)
+    test_error = ''
+    is_pass = True
+
     try:
-        workflow = Workflow(base, table, 'test-workflow')
+        workflow_test = WorkflowTest()
+        workflow_test.run()
+        test_results.extend(workflow_test.test_results)
 
-        workflow.update_workflow_name('new-test-workflow', base.account)
-        workflow.update_workflow_name('test-workflow', base.account)
-        workflow.update_workflow_config(base.account)
+        workflow_task_test = WorkflowTaskTest()
+        workflow_task_test.run()
+        test_results.extend(workflow_task_test.test_results)
 
-        workflow_task = WorkflowTask.submit_workflow_task(base, table, workflow, account, {table.text_column_name: 'abc'})
+        workflow_task_view_test = WorkflowTaskViewTest()
+        workflow_task_view_test.run()
+        test_results.extend(workflow_task_view_test.test_results)
 
-        workflow_task.transfer_task(base.account, {table.text_column_name: 'def'})
+        workflow_task_list_test = WorkflowTaskListTest()
+        workflow_task_list_test.run()
+        test_results.extend(workflow_task_list_test.test_results)
+
+        invalid_task_in_ongoing_list_test = InvalidTaskInOngoingListTest()
+        invalid_task_in_ongoing_list_test.run()
+        test_results.extend(invalid_task_in_ongoing_list_test.test_results)
+
+        invalid_form_column_task_detail_test = InvalidFormColumnTaskDetailTest()
+        invalid_form_column_task_detail_test.run()
+        test_results.extend(invalid_form_column_task_detail_test.test_results)
+
     except Exception as e:
-        raise e
-    finally:
-        base.delete_base()
+        test_error = traceback.format_exc()
+        is_pass = False
+    else:
+        is_pass = all([item['is_pass'] for item in test_results])
+
+    if LOCAL_TEST:
+        [print(item) for item in test_results]
+    else:
+        lines = []
+        for item in test_results:
+            tmp_lines = []
+            tmp_lines.append(f"name: {item['name']}")
+            if item.get('describe'):
+                tmp_lines.append(f"describe: {item['describe']}")
+            tmp_lines.append(f"is_pass: {item['is_pass']}")
+            if item.get('error'):
+                tmp_lines.append(f"error: {item['error']}")
+            lines.append('\n'.join(tmp_lines))
+
+        if test_error:
+            detail = '\n'.join(lines + ['\n\n\n', test_error])
+        else:
+            detail = '\n'.join(lines)
+
+        detail = f"```\n{detail}\n```"
+        base = _Base(BASE_API_TOKEN_FOR_WORKFLOW, TEST_WORKFLOW_SERVER_URL)
+        base.auth()
+        base.append_row('Table2', {'details': detail, 'is_pass': is_pass})
 
 
 if __name__ == '__main__':
