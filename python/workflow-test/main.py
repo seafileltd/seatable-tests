@@ -766,7 +766,7 @@ def main():
         detail = f"```\n{detail}\n```"
         base = _Base(BASE_API_TOKEN_FOR_WORKFLOW, TEST_WORKFLOW_SERVER_URL)
         base.auth()
-        base.append_row('Table2', {'detail': detail, 'is_pass': is_pass})
+        base.append_row('TestResults', {'detail': detail, 'is_pass': is_pass})
 
 
 if __name__ == '__main__':
