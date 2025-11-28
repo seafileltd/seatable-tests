@@ -222,7 +222,7 @@ class Workflow:
         self.workflow = workflow
 
     def delete(self, account: Account):
-        url = f'{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/'
+        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/"
         resp = requests.delete(url, headers=account.token_headers)
         assert resp.ok
 
