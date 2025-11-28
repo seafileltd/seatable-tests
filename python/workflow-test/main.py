@@ -13,7 +13,7 @@ import requests
 from seatable_api import Base as _Base, Account
 from seatable_api.constants import ColumnTypes
 
-from local_settings import TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL, \
+from local_settings import TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, SERVER_URL, \
     TEST_WORKFLOW_GROUP_NAME, LOCAL_TEST, BASE_API_TOKEN_FOR_WORKFLOW
 
 
@@ -31,13 +31,13 @@ class Base:
         assert self.base
 
     def delete(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workspace/{self.workspace['id']}/dtable/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workspace/{self.workspace['id']}/dtable/"
         resp = requests.delete(url, headers=self.account.token_headers, json={'name': self.name})
         assert resp.ok
 
     def list_workflows(self):
         params = {'workspace_id': self.workspace['id'], 'name': self.name}
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/"
         resp = requests.get(url, headers=self.account.token_headers, params=params)
         assert resp.ok
         workflow_list = resp.json()['workflow_list']
@@ -90,7 +90,7 @@ class Workflow:
             'workflow_config': json.dumps(self.gen_init_workflow_config())
         }
 
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/"
         resp = requests.post(url, headers=base.account.token_headers, data=data)
         assert resp.ok
         self.workflow = resp.json()['workflow']
@@ -154,7 +154,7 @@ class Workflow:
         }
 
     def update_workflow_name(self, name: str, account: Account):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/"
         data = {'workflow_name': name}
         resp = requests.put(url, headers=account.token_headers, data=data)
         assert resp.ok
@@ -213,7 +213,7 @@ class Workflow:
                 'readonly_columns': []
             }
         })
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/"
         data = {'workflow_config': json.dumps(workflow_config)}
         resp = requests.put(url, headers=account.token_headers, data=data)
         assert resp.ok
@@ -222,7 +222,7 @@ class Workflow:
         self.workflow = workflow
 
     def delete(self, account: Account):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow['token']}/"
         resp = requests.delete(url, headers=account.token_headers)
         assert resp.ok
 
@@ -239,7 +239,7 @@ class WorkflowTask:
 
     @classmethod
     def submit_workflow_task(cls, base: Base, table: Table, workflow: Workflow, initiator_account: Account, form_data: dict):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{workflow.workflow['token']}/task-submit/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{workflow.workflow['token']}/task-submit/"
         data = {'row_data': json.dumps(form_data)}
         resp = requests.post(url, headers=initiator_account.token_headers, data=data)
         assert resp.ok
@@ -254,7 +254,7 @@ class WorkflowTask:
         return workflow_task
 
     def reload_workflow_task(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/"
         params = {
             'filter_type': 'initiated'
         }
@@ -274,7 +274,7 @@ class WorkflowTask:
         assert (results[0].get(self.table.participants_column_name) or []) == [item['email'] for item in self.workflow_task['participants']]
 
     def transfer_task(self, transfer_account: Account, row_data: dict):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task['id']}/transfer/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task['id']}/transfer/"
         data = {
             'row_data': json.dumps(row_data),
             'node_id': self.workflow_task['node_id']
@@ -349,7 +349,7 @@ class WorkflowTest:
         assert not workflow_list
 
     def run(self):
-        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, SERVER_URL)
         self.account.auth()
         self.account.load_account_info()
 
@@ -398,7 +398,7 @@ class WorkflowTaskTest:
         assert self.workflow_task.workflow_task['task_state'] == 'finished'
 
     def run(self):
-        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, SERVER_URL)
         self.account.auth()
         self.account.load_account_info()
 
@@ -435,7 +435,7 @@ class WorkflowTaskViewTest:
 
     @wrap_test('Test view task as initiator')
     def test_initiator_view(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/initiator-view/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/initiator-view/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         resp_json = resp.json()
@@ -455,7 +455,7 @@ class WorkflowTaskViewTest:
 
     @wrap_test('Test view task as participant')
     def test_participant_view(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         resp_json = resp.json()
@@ -473,7 +473,7 @@ class WorkflowTaskViewTest:
 
     @wrap_test('Test view task as admin')
     def test_admin_view(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/admin-view/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/admin-view/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         resp_json = resp.json()
@@ -490,7 +490,7 @@ class WorkflowTaskViewTest:
             assert column_key in valid_column_keys
 
     def run(self):
-        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, SERVER_URL)
         self.account.auth()
         self.account.load_account_info()
 
@@ -527,7 +527,7 @@ class WorkflowTaskListTest:
 
     @wrap_test('Test submitted tasks')
     def test_submitted_tasks(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=initiated"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=initiated"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         task_list = resp.json()['task_list']
@@ -537,7 +537,7 @@ class WorkflowTaskListTest:
 
     @wrap_test('Test ongoing tasks')
     def test_ongoing_tasks(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=ongoing"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=ongoing"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         task_list = resp.json()['task_list']
@@ -547,7 +547,7 @@ class WorkflowTaskListTest:
 
     @wrap_test('Test all tasks')
     def test_all_tasks(self):
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=all"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/?filter_type=all"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         task_list = resp.json()['task_list']
@@ -556,7 +556,7 @@ class WorkflowTaskListTest:
         assert count == 3
 
     def run(self):
-        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, SERVER_URL)
         self.account.auth()
         self.account.load_account_info()
 
@@ -610,7 +610,7 @@ class InvalidTaskInOngoingListTest:
         self.workflow1_task = WorkflowTask.submit_workflow_task(self.base1, self.table1, self.workflow1, self.account, {self.table1.table['columns'][0]['name']: 'abc', self.table1.collaborator_column_name: [self.account.username]})
         self.workflow2_task = WorkflowTask.submit_workflow_task(self.base2, self.table2, self.workflow2, self.account, {self.table2.table['columns'][0]['name']: 'def', self.table2.collaborator_column_name: [self.account.username]})
 
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         task_list: list = resp.json()['task_list']
@@ -623,7 +623,7 @@ class InvalidTaskInOngoingListTest:
 
         # delete column to make workflow invalid
         self.base2.base.delete_column(self.table2.table['name'], self.table2.state_column['key'])
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         task_list: list = resp.json()['task_list']
@@ -635,7 +635,7 @@ class InvalidTaskInOngoingListTest:
         assert not find_workflow2_task['is_valid']
 
     def run(self):
-        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, SERVER_URL)
         self.account.auth()
         self.account.load_account_info()
 
@@ -667,10 +667,10 @@ class InvalidFormColumnTaskDetailTest:
     @wrap_test('Test invalid form column task detail', describe='Test whether task details can be correctly retrieved after a field in the workflow node is deleted', raise_exception=False)
     def test_invalid_form_column_task_detail(self):
         self.workflow_task = WorkflowTask.submit_workflow_task(self.base, self.table, self.workflow, self.account, {self.table.collaborator_column_name: [self.account.username], self.table.text_column_name: 'abc', self.table.number_column_name: 123})
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         resp_json = resp.json()
@@ -679,10 +679,10 @@ class InvalidFormColumnTaskDetailTest:
 
         self.base.base.delete_column(self.table.table['name'], self.table.number_column['key'])
 
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/ongoing-tasks/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
-        url = f"{TEST_WORKFLOW_SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
+        url = f"{SERVER_URL.strip('/')}/api/v2.1/workflows/{self.workflow.workflow['token']}/tasks/{self.workflow_task.workflow_task['id']}/participant-view/"
         resp = requests.get(url, headers=self.account.token_headers)
         assert resp.ok
         resp_json = resp.json()
@@ -690,7 +690,7 @@ class InvalidFormColumnTaskDetailTest:
         assert self.table.number_column['key'] not in readwrite_columns_keys
 
     def run(self):
-        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, TEST_WORKFLOW_SERVER_URL)
+        self.account = Account(TEST_WORKFLOW_USER_EMAIL, TEST_WORKFLOW_USER_PWD, SERVER_URL)
         self.account.auth()
         self.account.load_account_info()
 
@@ -764,7 +764,7 @@ def main():
             detail = '\n'.join(lines)
 
         detail = f"```\n{detail}\n```"
-        base = _Base(BASE_API_TOKEN_FOR_WORKFLOW, TEST_WORKFLOW_SERVER_URL)
+        base = _Base(BASE_API_TOKEN_FOR_WORKFLOW, SERVER_URL)
         base.auth()
         base.append_row('TestResults', {'detail': detail, 'is_pass': is_pass})
 
