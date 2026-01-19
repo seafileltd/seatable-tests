@@ -148,7 +148,9 @@ class Workflow:
                             {'key': self.table.number_column['key']},
                         ],
                         'readonly_columns': []
-                    }
+                    },
+                    "enable_processing_time_limit": True,
+                    "processing_time_limit": "+1d"
                 }
             ]
         }
